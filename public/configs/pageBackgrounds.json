@@ -1,0 +1,15 @@
+{
+  "home": {
+    "type": "video",
+    "src": "/videos/home.mp4",
+    "options": { "loop": true, "muted": true }
+  },
+  "research": {
+    "type": "image",
+    "src": "/images/research.png"
+  },
+  "default": {
+    "type": "color",
+    "value": "#18181b"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "common": {
+    "siteTitle": "LSI戦略コミッティ",
+    "siteDescription": "最新のLSI技術動向、分析、TOPICS配信"
+  },
+  "nav": {
+    "home": "ホーム",
+    "research": "動向調査",
+    "topics": "TOPICS配信",
+    "analysis": "分析",
+    "contact": "お問い合わせ",
+    "admin": "管理者用"
+  },
+  "footer": {
+    "copyright": "© 2025 LSI戦略コミッティ. All rights reserved.",
+    "privacyPolicy": "プライバシーポリシー",
+    "termsOfService": "利用規約",
+    "contact": "お問い合わせ",
+    "admin": "管理者用"
+  },
+  "home": {
+    "welcome": {
+      "title": "LSI戦略コミッティへようこそ",
+      "description": "最新のLSI技術動向、分析、TOPICS配信を行っています。",
+      "button": "活動概要を見る"
+    }
+  },
+  "research": {
+    "title": "動向調査",
+    "description": "最新の半導体技術動向を調査・分析しています",
+    "readMore": "レポート詳細へ",
+    "publishDate": "公開日: {date}",
+    "filter": "フィルター",
+    "sort": "並び替え",
+    "category": "カテゴリー",
+    "search": "検索"
+  },
+  "languageSwitcher": {
+    "language": "言語",
+    "ja": "日本語",
+    "en": "英語"
+  }
+}

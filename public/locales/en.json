@@ -1,0 +1,43 @@
+{
+  "common": {
+    "siteTitle": "LSI Strategy Committee",
+    "siteDescription": "Latest LSI technology trends, analysis, and TOPICS delivery"
+  },
+  "nav": {
+    "home": "Home",
+    "research": "Trend Research",
+    "topics": "TOPICS",
+    "analysis": "Analysis",
+    "contact": "Contact",
+    "admin": "Admin"
+  },
+  "footer": {
+    "copyright": "© 2025 LSI Strategy Committee. All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "contact": "Contact",
+    "admin": "Admin"
+  },
+  "home": {
+    "welcome": {
+      "title": "Welcome to LSI Strategy Committee",
+      "description": "We provide the latest LSI technology trends, analysis, and TOPICS delivery.",
+      "button": "View Activities"
+    }
+  },
+  "research": {
+    "title": "Trend Research",
+    "description": "We research and analyze the latest semiconductor technology trends",
+    "readMore": "View Report Details",
+    "publishDate": "Publish Date: {date}",
+    "filter": "Filter",
+    "sort": "Sort",
+    "category": "Category",
+    "search": "Search"
+  },
+  "languageSwitcher": {
+    "language": "Language",
+    "ja": "Japanese",
+    "en": "English"
+  }
+}

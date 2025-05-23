@@ -1,0 +1,3237 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LSI戦略コミッティ - シングルページデモ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+      }
+
+      #video-background-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: -1;
+        transition: opacity 0.5s ease-in-out;
+      }
+
+      #background-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .content-overlay {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding-top: 90px;
+        padding-bottom: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+        color: white;
+      }
+
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+      }
+      .text-shadow-sm {
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+      }
+
+      .top-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 10;
+        background-color: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 0.75rem 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .form-input,
+      .form-select,
+      .form-textarea,
+      .form-checkbox {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        border-radius: 0.375rem;
+      }
+      .form-input,
+      .form-select,
+      .form-textarea {
+        padding: 0.75rem 1rem;
+        width: 100%;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      .form-checkbox {
+        padding: 0.5rem;
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-right: 0.5rem;
+        vertical-align: middle;
+        flex-shrink: 0;
+      }
+
+      .form-input::placeholder,
+      .form-textarea::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus,
+      .form-checkbox:focus {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-color: rgba(59, 130, 246, 0.7);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+      }
+
+      .form-select option {
+        background-color: #374151;
+        color: white;
+      }
+
+      .form-select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
+        background-position: right 0.75rem center;
+        background-repeat: no-repeat;
+        background-size: 1em 1em;
+        padding-right: 2.5rem;
+      }
+
+      .page-section.hidden,
+      .view-container.hidden {
+        display: none;
+      }
+      .nav-link.active {
+        color: white;
+        font-weight: 600;
+        background-color: rgba(59, 130, 246, 0.3);
+      }
+
+      .report-card,
+      .metric-card,
+      .admin-content-card,
+      .detail-content-card,
+      .admin-list-card,
+      .article-db-card,
+      .admin-main-list-card {
+        background-color: rgba(31, 41, 55, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease-in-out;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        color: #e5e7eb;
+        overflow: hidden;
+      }
+      .report-card:hover,
+      .metric-card:hover,
+      .admin-content-card:hover,
+      .detail-content-card:hover,
+      .admin-list-card:hover,
+      .article-db-card:hover,
+      .admin-main-list-card:hover {
+        background-color: rgba(55, 65, 81, 0.85);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+      .admin-list-card h3,
+      .admin-list-card h4 {
+        color: #93c5fd;
+      }
+      .article-db-card h4 {
+        color: #67e8f9;
+      }
+      .admin-main-list-card h4 {
+        color: #6ee7b7;
+      }
+      .admin-list-card p,
+      .article-db-card p,
+      .admin-main-list-card p {
+        color: #d1d5db;
+      }
+      .admin-list-card p.text-xs,
+      .article-db-card p.text-xs,
+      .admin-main-list-card p.text-xs {
+        color: #9ca3af;
+      }
+
+      .article-db-card {
+        width: 300px;
+        height: 14rem;
+      }
+      .article-db-card .card-thumbnail {
+        width: 100%;
+        height: 7rem;
+        object-fit: cover;
+      }
+      .article-db-card .card-content {
+        padding: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex-grow: 1;
+      }
+      .article-db-card .summary,
+      .admin-main-list-card .summary {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.75rem;
+        line-height: 1rem;
+        margin-bottom: 0.25rem;
+      }
+      .admin-main-list-card .summary {
+        -webkit-line-clamp: 3;
+      }
+      .article-db-card .labels-container,
+      .admin-main-list-card .labels-container {
+        max-height: 2.5rem;
+        overflow-y: auto;
+      }
+      .admin-main-list-card {
+        width: 300px;
+      }
+      .admin-main-list-card .card-thumbnail {
+        width: 100%;
+        height: 10rem;
+        object-fit: cover;
+      }
+      .admin-main-list-card .card-content {
+        padding: 0.75rem;
+      }
+
+      .tab-button {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.375rem 0.375rem 0 0;
+        background-color: rgba(55, 65, 81, 0.6);
+        color: #d1d5db;
+        border: 1px solid transparent;
+        border-bottom: none;
+        transition: background-color 0.3s, color 0.3s;
+      }
+      .tab-button:hover {
+        background-color: rgba(75, 85, 99, 0.7);
+        color: white;
+      }
+      .tab-button.active {
+        background-color: rgba(31, 41, 55, 0.85);
+        color: white;
+        font-weight: 600;
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      .tab-content.hidden {
+        display: none;
+      }
+      .subtab-button {
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        background-color: rgba(75, 85, 99, 0.5);
+        color: #d1d5db;
+        transition: background-color 0.3s, color 0.3s;
+        border: 1px solid transparent;
+      }
+      .subtab-button:hover {
+        background-color: rgba(107, 114, 128, 0.6);
+        color: white;
+      }
+      .subtab-button.active {
+        background-color: rgba(59, 130, 246, 0.4);
+        color: white;
+        font-weight: 500;
+      }
+      .subtab-content.hidden {
+        display: none;
+      }
+
+      .article-table th,
+      .article-table td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: #d1d5db;
+      }
+      .article-table th {
+        background-color: rgba(55, 65, 81, 0.5);
+        color: #e5e7eb;
+        font-weight: 600;
+      }
+      .article-table tr:hover td {
+        background-color: rgba(75, 85, 99, 0.3);
+      }
+      .article-table .action-cell {
+        width: 60px;
+        text-align: center;
+      }
+
+      .prose {
+        color: #d1d5db;
+      }
+      .prose h1,
+      .prose h2,
+      .prose h3,
+      .prose h4,
+      .prose h5,
+      .prose h6 {
+        color: white;
+      }
+      .prose a {
+        color: #60a5fa;
+      }
+      .prose a:hover {
+        color: #3b82f6;
+      }
+      .prose ul > li::before {
+        background-color: #9ca3af;
+      }
+      .prose strong {
+        color: white;
+      }
+      .prose blockquote {
+        border-left-color: #4b5563;
+        color: #9ca3af;
+      }
+
+      .video-aspect-ratio-container {
+        position: relative;
+        width: 100%;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        background-color: black;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+      .video-aspect-ratio-container video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .modern-pdf-button {
+        background-color: #4b5563;
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .modern-pdf-button:hover {
+        background-color: #374151;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+      .modern-pdf-button svg {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-right: 0.5rem;
+      }
+
+      .toggle-switch-container {
+        display: flex;
+        align-items: center;
+      }
+      .toggle-switch-label {
+        margin-right: 0.5rem;
+        font-size: 0.875rem;
+        color: #d1d5db;
+      }
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+      }
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #4b5563;
+        transition: 0.4s;
+        border-radius: 20px;
+      }
+      .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+      input:checked + .toggle-slider {
+        background-color: #3b82f6;
+      }
+      input:checked + .toggle-slider:before {
+        transform: translateX(20px);
+      }
+
+      .delete-article-btn {
+        color: #f87171;
+        background-color: transparent;
+        border: none;
+        padding: 0.25rem;
+        border-radius: 0.25rem;
+        transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+      }
+      .delete-article-btn:hover {
+        color: white;
+        background-color: #ef4444;
+      }
+      .delete-article-btn svg {
+        width: 1.125rem;
+        height: 1.125rem;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900">
+    <nav class="top-bar">
+      <div class="container mx-auto flex items-center justify-between">
+        <a
+          href="#"
+          data-target="welcome-section"
+          class="nav-link nav-logo text-white text-xl md:text-2xl font-bold hover:text-blue-300 transition-colors"
+        >
+          LSI戦略コミッティ
+        </a>
+        <div class="hidden md:flex space-x-1 lg:space-x-2">
+          <a
+            href="#"
+            data-target="welcome-section"
+            class="nav-link text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-md text-sm font-medium"
+            >ホーム</a
+          >
+          <a
+            href="#"
+            data-target="research-section"
+            class="nav-link text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-md text-sm font-medium"
+            >動向調査</a
+          >
+          <a
+            href="#"
+            data-target="topics-section"
+            class="nav-link text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-md text-sm font-medium"
+            >TOPICS配信</a
+          >
+          <a
+            href="#"
+            data-target="analysis-section"
+            class="nav-link text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-md text-sm font-medium"
+            >分析</a
+          >
+          <a
+            href="#"
+            data-target="access-request-section"
+            class="nav-link text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-md text-sm font-medium"
+            >お問い合わせ</a
+          >
+        </div>
+        <div class="md:hidden">
+          <button
+            id="mobile-menu-button"
+            class="text-gray-300 hover:text-white focus:outline-none focus:text-white"
+          >
+            <svg class="h-6 w-6 fill-current" viewBox="0 0 24 24">
+              <path
+                fill-rule="evenodd"
+                d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div
+        id="mobile-menu"
+        class="md:hidden hidden bg-gray-800 bg-opacity-90 py-2"
+      >
+        <a
+          href="#"
+          data-target="welcome-section"
+          class="nav-link block text-gray-300 hover:text-white hover:bg-gray-700 px-4 py-2 rounded-md text-base font-medium"
+          >ホーム</a
+        >
+        <a
+          href="#"
+          data-target="research-section"
+          class="nav-link block text-gray-300 hover:text-white hover:bg-gray-700 px-4 py-2 rounded-md text-base font-medium"
+          >動向調査</a
+        >
+        <a
+          href="#"
+          data-target="topics-section"
+          class="nav-link block text-gray-300 hover:text-white hover:bg-gray-700 px-4 py-2 rounded-md text-base font-medium"
+          >TOPICS配信</a
+        >
+        <a
+          href="#"
+          data-target="analysis-section"
+          class="nav-link block text-gray-300 hover:text-white hover:bg-gray-700 px-4 py-2 rounded-md text-base font-medium"
+          >分析</a
+        >
+        <a
+          href="#"
+          data-target="access-request-section"
+          class="nav-link block text-gray-300 hover:text-white hover:bg-gray-700 px-4 py-2 rounded-md text-base font-medium"
+          >お問い合わせ</a
+        >
+      </div>
+    </nav>
+
+    <div id="video-background-container">
+      <video
+        id="background-video"
+        autoplay
+        loop
+        muted
+        playsinline
+        poster="https://placehold.co/1920x1080/000000/FFFFFF?text=Loading+Video..."
+      >
+        <source src="C:\Users\Ryo\Downloads\cars.mp4" type="video/mp4" />
+        お使いのブラウザは動画タグをサポートしていません。
+      </video>
+    </div>
+
+    <main class="content-overlay">
+      <section
+        id="welcome-section"
+        class="page-section bg-black bg-opacity-60 p-8 md:p-12 rounded-xl shadow-2xl max-w-3xl w-full mb-12 text-center"
+      >
+        <h1 class="text-4xl md:text-5xl font-bold mb-6 text-shadow">
+          LSI戦略コミッティへようこそ
+        </h1>
+        <p class="text-lg md:text-xl mb-8 text-shadow-sm">
+          最新のLSI技術動向、分析、TOPICS配信を行っています。
+        </p>
+        <button
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+        >
+          活動概要を見る
+        </button>
+      </section>
+
+      <section
+        id="access-request-section"
+        class="page-section hidden w-full max-w-3xl mx-auto p-8 md:p-12 rounded-xl shadow-2xl bg-gray-800 bg-opacity-75 mb-12"
+      >
+        <h2
+          class="text-3xl md:text-4xl font-bold mb-8 text-center text-shadow text-white"
+        >
+          お問い合わせ・アクセス権申請
+        </h2>
+        <form class="space-y-6">
+          <div>
+            <label
+              for="name"
+              class="block text-sm font-medium text-gray-200 mb-1"
+              >お名前</label
+            ><input
+              type="text"
+              name="name"
+              id="name"
+              placeholder="山田 太郎"
+              class="form-input"
+            />
+          </div>
+          <div>
+            <label
+              for="email"
+              class="block text-sm font-medium text-gray-200 mb-1"
+              >メールアドレス</label
+            ><input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="your@email.com"
+              class="form-input"
+            />
+          </div>
+          <div>
+            <label
+              for="company"
+              class="block text-sm font-medium text-gray-200 mb-1"
+              >ご所属 (任意)</label
+            ><input
+              type="text"
+              name="company"
+              id="company"
+              placeholder="〇〇株式会社"
+              class="form-input"
+            />
+          </div>
+          <div>
+            <label
+              for="inquiry_type"
+              class="block text-sm font-medium text-gray-200 mb-1"
+              >お問い合わせ種別</label
+            >
+            <select id="inquiry_type" name="inquiry_type" class="form-select">
+              <option>アクセス権申請</option>
+              <option>取材・講演依頼</option>
+              <option>その他のお問い合わせ</option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="reason"
+              class="block text-sm font-medium text-gray-200 mb-1"
+              >内容・申請理由</label
+            ><textarea
+              id="reason"
+              name="reason"
+              rows="4"
+              placeholder="具体的な内容をご記入ください"
+              class="form-textarea"
+            ></textarea>
+          </div>
+          <div>
+            <button
+              type="submit"
+              class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-lg text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-green-500 transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              送信する
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section
+        id="research-section"
+        class="page-section hidden w-full max-w-5xl mx-auto p-8 md:p-12 mb-12"
+      >
+        <h1
+          class="text-4xl md:text-5xl font-bold mb-10 text-center text-shadow text-white"
+        >
+          半導体動向調査レポート
+        </h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="report-card p-6 flex flex-col">
+            <h2
+              class="text-2xl font-semibold mb-3 text-blue-300 text-shadow-sm"
+            >
+              次世代半導体材料の動向 2025
+            </h2>
+            <p class="text-gray-300 mb-4 flex-grow">
+              シリコンカーバイド(SiC)、窒化ガリウム(GaN)などの次世代材料に関する最新の研究開発動向と市場予測を解説します。
+            </p>
+            <p class="text-sm text-gray-400 mb-4">公開日: 2025年5月15日</p>
+            <button
+              data-report-id="report-001"
+              class="read-trend-report-btn mt-auto self-start bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
+            >
+              レポート詳細へ
+            </button>
+          </div>
+          <div class="report-card p-6 flex flex-col">
+            <h2
+              class="text-2xl font-semibold mb-3 text-blue-300 text-shadow-sm"
+            >
+              AIチップ市場の競争環境分析
+            </h2>
+            <p class="text-gray-300 mb-4 flex-grow">
+              NVIDIA, Intel,
+              AMDをはじめとする主要プレイヤーの戦略と、新興企業の動向を詳細に分析。今後の市場シェア変動を予測します。
+            </p>
+            <p class="text-sm text-gray-400 mb-4">公開日: 2025年4月28日</p>
+            <button
+              data-report-id="report-002"
+              class="read-trend-report-btn mt-auto self-start bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
+            >
+              レポート詳細へ
+            </button>
+          </div>
+          <div class="report-card p-6 flex flex-col">
+            <h2
+              class="text-2xl font-semibold mb-3 text-blue-300 text-shadow-sm"
+            >
+              チップレット技術の最新トレンドと将来展望
+            </h2>
+            <p class="text-gray-300 mb-4 flex-grow">
+              高性能コンピューティングにおけるチップレット技術の採用状況、標準化の動き、および今後の技術的課題について考察します。
+            </p>
+            <p class="text-sm text-gray-400 mb-4">公開日: 2025年3月10日</p>
+            <button
+              data-report-id="report-003"
+              class="read-trend-report-btn mt-auto self-start bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
+            >
+              レポート詳細へ
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="research-detail-section"
+        class="page-section hidden w-full max-w-5xl mx-auto p-6 md:p-10 mb-12 detail-content-card"
+      >
+        <div class="flex justify-between items-center mb-6">
+          <h1
+            id="trend-detail-title"
+            class="text-3xl md:text-4xl font-bold text-blue-300 text-shadow"
+          ></h1>
+          <button
+            id="back-to-trend-list-from-detail"
+            class="text-sm bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-md transition-colors"
+          >
+            動向調査一覧へ戻る
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="md:col-span-2">
+            <div class="video-aspect-ratio-container">
+              <video
+                id="trend-detail-video"
+                controls
+                playsinline
+                poster="https://placehold.co/1280x720/111827/ffffff?text=動画読み込み中..."
+              ></video>
+            </div>
+          </div>
+          <div class="md:col-span-1 space-y-6">
+            <div>
+              <h2 class="text-xl font-semibold text-sky-300 mb-1">講演者</h2>
+              <p id="trend-detail-speaker" class="text-gray-200"></p>
+              <p id="trend-detail-department" class="text-sm text-gray-400"></p>
+            </div>
+            <div>
+              <h2 class="text-xl font-semibold text-sky-300 mb-2">資料</h2>
+              <div
+                id="trend-detail-pdf-preview-placeholder"
+                class="w-full h-48 bg-gray-700 rounded-md flex flex-col items-center justify-center text-gray-400 mb-2 text-center p-4"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-12 w-12 mb-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="1"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                <p class="text-sm">PDFプレビューエリア</p>
+                <p class="text-xs mt-1">(実際のサーバー環境で表示可能)</p>
+              </div>
+              <a
+                id="trend-detail-pdf-link"
+                href="#"
+                target="_blank"
+                class="modern-pdf-button"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                講演資料をダウンロード
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8">
+          <h2 class="text-2xl font-semibold text-sky-300 mb-3">アジェンダ</h2>
+          <div
+            id="trend-detail-agenda"
+            class="prose prose-invert max-w-none text-gray-300 space-y-2"
+          ></div>
+        </div>
+      </section>
+
+      <section
+        id="topics-section"
+        class="page-section hidden w-full max-w-5xl mx-auto p-8 md:p-12 mb-12"
+      >
+        <h1
+          class="text-4xl md:text-5xl font-bold mb-10 text-center text-shadow text-white"
+        >
+          半導体TOPICS配信
+        </h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="report-card p-6 flex flex-col">
+            <h2
+              class="text-2xl font-semibold mb-3 text-green-300 text-shadow-sm"
+            >
+              2025年5月号 TOPICS
+            </h2>
+            <ul
+              class="list-disc list-inside text-gray-300 mb-4 flex-grow space-y-1"
+            >
+              <li>量子コンピューティング向けLSIの最新開発状況</li>
+              <li>EUVリソグラフィ技術の進展と課題</li>
+              <li>サステナブルな半導体製造への取り組み</li>
+            </ul>
+            <p class="text-sm text-gray-400 mb-4">配信日: 2025年5月1日</p>
+            <button
+              data-topic-id="topics-2025-05"
+              class="read-topic-btn mt-auto self-start bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
+            >
+              今月号を読む
+            </button>
+          </div>
+          <div class="report-card p-6 flex flex-col">
+            <h2
+              class="text-2xl font-semibold mb-3 text-green-300 text-shadow-sm"
+            >
+              2025年4月号 TOPICS
+            </h2>
+            <ul
+              class="list-disc list-inside text-gray-300 mb-4 flex-grow space-y-1"
+            >
+              <li>メモリ技術のロードマップ解説 (DDR6, HBM4)</li>
+              <li>オープンソースハードウェア(RISC-V)の動向</li>
+              <li>半導体サプライチェーンの地政学的リスク分析</li>
+            </ul>
+            <p class="text-sm text-gray-400 mb-4">配信日: 2025年4月1日</p>
+            <button
+              data-topic-id="topics-2025-04"
+              class="read-topic-btn mt-auto self-start bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
+            >
+              今月号を読む
+            </button>
+          </div>
+          <div class="report-card p-6 flex flex-col">
+            <h2
+              class="text-2xl font-semibold mb-3 text-green-300 text-shadow-sm"
+            >
+              2025年3月号 TOPICS
+            </h2>
+            <ul
+              class="list-disc list-inside text-gray-300 mb-4 flex-grow space-y-1"
+            >
+              <li>3D積層技術の最新トレンドと応用事例</li>
+              <li>自動車向け半導体の技術革新</li>
+              <li>主要ファウンドリの設備投資計画まとめ</li>
+            </ul>
+            <p class="text-sm text-gray-400 mb-4">配信日: 2025年3月1日</p>
+            <button
+              data-topic-id="topics-2025-03"
+              class="read-topic-btn mt-auto self-start bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
+            >
+              今月号を読む
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="topics-detail-section"
+        class="page-section hidden w-full max-w-4xl mx-auto p-8 md:p-12 mb-12 detail-content-card"
+      >
+        <div class="flex justify-between items-center mb-6">
+          <h1
+            id="topics-detail-title"
+            class="text-3xl md:text-4xl font-bold text-yellow-300 text-shadow"
+          ></h1>
+          <button
+            id="back-to-topics-list-from-detail"
+            class="text-sm bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-md transition-colors"
+          >
+            TOPICS配信一覧へ戻る
+          </button>
+        </div>
+        <p
+          id="topics-detail-publish-date"
+          class="text-sm text-gray-400 mb-4"
+        ></p>
+        <div
+          id="topics-detail-summary"
+          class="prose prose-invert max-w-none text-gray-200 mb-8"
+        ></div>
+        <h2 class="text-2xl font-semibold mt-8 mb-4 text-sky-300">
+          今月の記事一覧
+        </h2>
+        <div id="topics-detail-articles-container" class="space-y-6"></div>
+      </section>
+
+      <section
+        id="article-detail-section"
+        class="page-section hidden w-full max-w-4xl mx-auto p-8 md:p-12 mb-12 detail-content-card"
+      >
+        <div class="flex justify-between items-center mb-6">
+          <h1
+            id="article-detail-title"
+            class="text-2xl md:text-3xl font-bold text-emerald-300 text-shadow"
+          ></h1>
+          <button
+            id="back-to-admin-article-list-btn"
+            class="text-sm bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-md transition-colors"
+          >
+            記事一覧へ戻る
+          </button>
+        </div>
+        <img
+          id="article-detail-thumbnail"
+          src=""
+          alt="記事サムネイル"
+          class="w-full h-64 object-cover rounded-lg mb-4"
+        />
+        <p id="article-detail-meta" class="text-sm text-gray-400 mb-2"></p>
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold text-sky-300 mb-1">要約</h3>
+          <p
+            id="article-detail-summary"
+            class="text-gray-300 leading-relaxed"
+          ></p>
+        </div>
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold text-sky-300 mb-1">ラベル</h3>
+          <div id="article-detail-labels" class="flex flex-wrap gap-2"></div>
+        </div>
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold text-sky-300 mb-1">本文</h3>
+          <div
+            id="article-detail-fulltext"
+            class="prose prose-invert max-w-none text-gray-300 bg-gray-800 p-4 rounded-md min-h-[200px]"
+          >
+            <p>
+              ここに記事の本文が表示されます。(このデモでは本文内容は省略しています)
+            </p>
+            <p>
+              実際の記事では、詳細な情報や分析、図表などが含まれることになります。
+            </p>
+          </div>
+        </div>
+        <div>
+          <a
+            id="article-detail-source-link"
+            href="#"
+            target="_blank"
+            class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-300"
+          >
+            元記事を読む
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 ml-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              />
+            </svg>
+          </a>
+        </div>
+      </section>
+
+      <section
+        id="analysis-section"
+        class="page-section hidden w-full max-w-5xl mx-auto p-8 md:p-12 mb-12"
+      >
+        <h1
+          class="text-4xl md:text-5xl font-bold mb-10 text-center text-shadow text-white"
+        >
+          サイト分析データ
+        </h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div class="metric-card p-6 flex flex-col justify-between">
+            <div>
+              <h2
+                class="text-2xl font-semibold mb-3 text-purple-300 text-shadow-sm"
+              >
+                サイトアクセス数
+              </h2>
+              <p class="text-5xl font-bold text-white">
+                12,345 <span class="text-2xl font-normal">PV</span>
+              </p>
+              <p class="text-lg text-gray-300">（今月累計）</p>
+            </div>
+            <p class="text-sm text-gray-400 mt-4">
+              前月比: <span class="text-green-400 font-semibold">+5.2%</span>
+            </p>
+          </div>
+          <div class="metric-card p-6">
+            <h2
+              class="text-2xl font-semibold mb-4 text-teal-300 text-shadow-sm"
+            >
+              注目キーワード（今月）
+            </h2>
+            <ul class="space-y-2">
+              <li>...</li>
+            </ul>
+          </div>
+        </div>
+        <div class="metric-card p-6">
+          <h2
+            class="text-2xl font-semibold mb-4 text-orange-300 text-shadow-sm"
+          >
+            アクセス推移グラフ（月間）
+          </h2>
+          <div
+            class="bg-gray-800 bg-opacity-60 h-80 flex items-center justify-center rounded-md border border-gray-700"
+          >
+            <p class="text-gray-400 text-lg">
+              （アクセス推移グラフ表示エリア）
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="admin-section"
+        class="page-section hidden w-full max-w-3xl mx-auto p-8 md:p-12 rounded-xl shadow-2xl bg-gray-700 bg-opacity-80 mb-12"
+      >
+        <h2
+          class="text-2xl md:text-3xl font-bold mb-8 text-center text-shadow text-white"
+        >
+          管理者用ページ
+        </h2>
+        <p class="text-lg text-gray-200 mb-6 text-center">
+          LSI戦略コミッティのコンテンツ管理を行います。
+        </p>
+        <div class="space-y-4">
+          <button
+            data-target="admin-topics-management-section"
+            class="nav-link w-full bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+          >
+            TOPICS配信を追加・編集
+          </button>
+          <button
+            data-target="admin-trend-reports-management-section"
+            class="nav-link w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+          >
+            動向調査レポートを追加・編集
+          </button>
+        </div>
+      </section>
+
+      <section
+        id="admin-trend-reports-management-section"
+        class="page-section hidden w-full max-w-4xl mx-auto p-6 md:p-8 mb-12 admin-content-card"
+      >
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl md:text-3xl font-bold text-shadow text-white">
+            動向調査レポート 管理
+          </h1>
+          <button
+            data-target="admin-section"
+            class="nav-link text-sm bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-md transition-colors"
+          >
+            管理者ページへ戻る
+          </button>
+        </div>
+
+        <div id="admin-trend-reports-view-container">
+          <div id="admin-trend-reports-list-view" class="view-container">
+            <div
+              class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4"
+            >
+              <h2 class="text-xl font-semibold text-sky-300">
+                登録レポート一覧
+              </h2>
+              <button
+                id="admin-new-trend-report-btn"
+                class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-md transition duration-300"
+              >
+                新規レポート作成
+              </button>
+            </div>
+            <input
+              type="search"
+              placeholder="レポートタイトルで検索..."
+              class="form-input mb-6"
+            />
+            <div
+              id="admin-trend-reports-card-container"
+              class="grid grid-cols-1 md:grid-cols-2 gap-6"
+            ></div>
+          </div>
+
+          <div
+            id="admin-trend-report-editor-view"
+            class="view-container hidden mt-6"
+          >
+            <div class="flex justify-between items-center mb-4">
+              <h2
+                id="admin-trend-report-editor-title"
+                class="text-xl font-semibold text-sky-300"
+              >
+                新規レポート作成
+              </h2>
+              <button
+                id="admin-back-to-trend-reports-list-btn"
+                class="text-sm bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-md transition-colors"
+              >
+                レポート一覧へ戻る
+              </button>
+            </div>
+            <form class="space-y-6">
+              <div>
+                <label
+                  for="trend-report-title"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >タイトル</label
+                ><input
+                  type="text"
+                  id="trend-report-title"
+                  class="form-input"
+                />
+              </div>
+              <div>
+                <label
+                  for="trend-report-speaker"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >講演者</label
+                ><input
+                  type="text"
+                  id="trend-report-speaker"
+                  class="form-input"
+                />
+              </div>
+              <div>
+                <label
+                  for="trend-report-department"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >講演者部署</label
+                ><input
+                  type="text"
+                  id="trend-report-department"
+                  class="form-input"
+                />
+              </div>
+              <div>
+                <label
+                  for="trend-report-agenda"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >アジェンダ (各項目を改行で入力)</label
+                ><textarea
+                  id="trend-report-agenda"
+                  rows="5"
+                  class="form-textarea"
+                ></textarea>
+              </div>
+              <div>
+                <label
+                  for="trend-report-video-url"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >動画URL</label
+                ><input
+                  type="url"
+                  id="trend-report-video-url"
+                  class="form-input"
+                  placeholder="https://example.com/video.mp4"
+                />
+              </div>
+              <div>
+                <label
+                  for="trend-report-poster-url"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >動画ポスター画像URL</label
+                ><input
+                  type="url"
+                  id="trend-report-poster-url"
+                  class="form-input"
+                  placeholder="https://example.com/poster.jpg"
+                />
+              </div>
+              <div>
+                <label
+                  for="trend-report-pdf-url"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >資料PDF URL</label
+                ><input
+                  type="url"
+                  id="trend-report-pdf-url"
+                  class="form-input"
+                  placeholder="https://example.com/document.pdf"
+                />
+              </div>
+              <div>
+                <label
+                  for="trend-report-publish-date"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >公開日</label
+                ><input
+                  type="date"
+                  id="trend-report-publish-date"
+                  class="form-input"
+                />
+              </div>
+              <div class="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  id="admin-cancel-trend-report-btn"
+                  class="bg-gray-500 hover:bg-gray-400 text-white font-semibold py-2 px-4 rounded-md transition duration-300"
+                >
+                  キャンセル
+                </button>
+                <button
+                  type="submit"
+                  id="admin-save-trend-report-btn"
+                  class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300"
+                >
+                  保存する
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="admin-topics-management-section"
+        class="page-section hidden w-full p-6 md:p-8 mb-12 admin-content-card"
+      >
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl md:text-3xl font-bold text-shadow text-white">
+            TOPICS配信 管理
+          </h1>
+          <button
+            data-target="admin-section"
+            class="nav-link text-sm bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-md transition-colors"
+          >
+            管理者ページへ戻る
+          </button>
+        </div>
+
+        <div class="mb-6 flex border-b border-gray-600">
+          <button
+            data-tab-target="admin-topics-collect-tab"
+            class="admin-main-tab tab-button active"
+          >
+            1. 記事収集
+          </button>
+          <button
+            data-tab-target="admin-topics-list-tab"
+            class="admin-main-tab tab-button"
+          >
+            2. 記事一覧
+          </button>
+          <button
+            data-tab-target="admin-topics-creation-tab"
+            class="admin-main-tab tab-button"
+          >
+            3. TOPICS作成・編集
+          </button>
+        </div>
+
+        <div
+          id="admin-topics-collect-tab"
+          class="admin-main-tab-content tab-content"
+        >
+          <div class="mb-4 flex space-x-2">
+            <button
+              data-subtab-target="admin-topics-rss-collect-subtab"
+              class="admin-collect-subtab subtab-button active"
+            >
+              RSS収集
+            </button>
+            <button
+              data-subtab-target="admin-topics-manual-collect-subtab"
+              class="admin-collect-subtab subtab-button"
+            >
+              手動追加
+            </button>
+          </div>
+
+          <div
+            id="admin-topics-rss-collect-subtab"
+            class="admin-collect-subtab-content subtab-content admin-content-card p-6"
+          >
+            <h3 class="text-xl font-semibold mb-4">RSSによる記事収集</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label
+                  for="rss-start-date"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >開始日</label
+                ><input type="date" id="rss-start-date" class="form-input" />
+              </div>
+              <div>
+                <label
+                  for="rss-end-date"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >終了日</label
+                ><input type="date" id="rss-end-date" class="form-input" />
+              </div>
+            </div>
+            <fieldset class="mb-4">
+              <legend class="block text-sm font-medium text-gray-300 mb-2">
+                ソース選択
+              </legend>
+              <div
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2"
+              >
+                <label
+                  for="rss-source-itmedia"
+                  class="flex items-center text-sm text-gray-200"
+                >
+                  <input
+                    id="rss-source-itmedia"
+                    name="rss-sources"
+                    type="checkbox"
+                    class="form-checkbox focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-500 rounded"
+                  />
+                  <span class="ml-2">ITmedia</span>
+                </label>
+                <label
+                  for="rss-source-mynavi"
+                  class="flex items-center text-sm text-gray-200"
+                >
+                  <input
+                    id="rss-source-mynavi"
+                    name="rss-sources"
+                    type="checkbox"
+                    class="form-checkbox focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-500 rounded"
+                  />
+                  <span class="ml-2">マイナビニュース</span>
+                </label>
+                <label
+                  for="rss-source-nhk"
+                  class="flex items-center text-sm text-gray-200"
+                >
+                  <input
+                    id="rss-source-nhk"
+                    name="rss-sources"
+                    type="checkbox"
+                    class="form-checkbox focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-500 rounded"
+                  />
+                  <span class="ml-2">NHK NEWS WEB</span>
+                </label>
+              </div>
+            </fieldset>
+            <button
+              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300 mb-6"
+            >
+              収集開始
+            </button>
+            <h4 class="text-lg font-semibold mb-2">収集結果</h4>
+            <div class="overflow-x-auto">
+              <table class="w-full article-table">
+                <thead>
+                  <tr>
+                    <th>日付</th>
+                    <th>タイトル</th>
+                    <th>出典</th>
+                    <th>要約</th>
+                    <th>ラベル</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>2025/05/17</td>
+                    <td>次世代AIチップの展望</td>
+                    <td>ITmedia</td>
+                    <td>(LLMによる要約...)</td>
+                    <td>AI, チップ</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <button
+              class="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300"
+            >
+              選択した記事を要約・ラベル付け (LLM)
+            </button>
+          </div>
+
+          <div
+            id="admin-topics-manual-collect-subtab"
+            class="admin-collect-subtab-content subtab-content hidden admin-content-card p-6"
+          >
+            <h3 class="text-xl font-semibold mb-4">記事の手動追加</h3>
+            <div class="space-y-4 mb-6">
+              <div>
+                <label
+                  for="manual-title"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >タイトル</label
+                ><input type="text" id="manual-title" class="form-input" />
+              </div>
+              <div>
+                <label
+                  for="manual-url"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >URL</label
+                ><input type="url" id="manual-url" class="form-input" />
+              </div>
+              <div>
+                <label
+                  for="manual-date"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >公開日 (任意)</label
+                ><input type="date" id="manual-date" class="form-input" />
+              </div>
+              <div>
+                <label
+                  for="manual-source"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >出典元 (任意)</label
+                ><input type="text" id="manual-source" class="form-input" />
+              </div>
+            </div>
+            <button
+              class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300 mb-6"
+            >
+              記事追加
+            </button>
+            <h4 class="text-lg font-semibold mb-2">追加済み記事</h4>
+            <div class="overflow-x-auto">
+              <table class="w-full article-table">
+                <thead>
+                  <tr>
+                    <th>日付</th>
+                    <th>タイトル</th>
+                    <th>出典</th>
+                    <th>要約</th>
+                    <th>ラベル</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>2025/05/16</td>
+                    <td>手動追加の記事サンプル</td>
+                    <td>自社ブログ</td>
+                    <td>(未処理)</td>
+                    <td>(未処理)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <button
+              class="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300"
+            >
+              選択した記事を要約・ラベル付け (LLM)
+            </button>
+          </div>
+        </div>
+
+        <div
+          id="admin-topics-list-tab"
+          class="admin-main-tab-content tab-content hidden admin-content-card p-6"
+        >
+          <h3 class="text-xl font-semibold mb-4">登録済み記事一覧</h3>
+          <div
+            class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4"
+          >
+            <input
+              type="search"
+              placeholder="記事タイトル、キーワードで検索..."
+              class="form-input flex-grow"
+            />
+            <div class="flex items-center space-x-2">
+              <div class="toggle-switch-container">
+                <span class="toggle-switch-label">表形式</span>
+                <label class="toggle-switch">
+                  <input
+                    type="checkbox"
+                    id="admin-article-list-display-toggle"
+                    checked
+                  />
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-switch-label ml-2">カード形式</span>
+              </div>
+              <button
+                id="admin-delete-selected-articles-btn"
+                class="delete-article-btn p-2"
+                title="選択した記事を一括削除"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-5 h-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12.56 0c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div
+            id="admin-article-list-card-view"
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+          ></div>
+          <div
+            id="admin-article-list-table-view"
+            class="overflow-x-auto hidden"
+          >
+            <table class="w-full article-table">
+              <thead class="sticky top-0">
+                <tr>
+                  <th>選択</th>
+                  <th>サムネイル</th>
+                  <th>タイトル</th>
+                  <th>日付 [出典]</th>
+                  <th>要約</th>
+                  <th>ラベル</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div
+          id="admin-topics-creation-tab"
+          class="admin-main-tab-content tab-content hidden"
+        >
+          <div
+            id="topics-list-view"
+            class="view-container admin-content-card p-6"
+          >
+            <div
+              class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4"
+            >
+              <h3 class="text-xl font-semibold">作成済みTOPICS一覧</h3>
+              <button
+                id="show-topics-editor-new"
+                class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-md transition duration-300"
+              >
+                新規TOPICS作成
+              </button>
+            </div>
+            <input
+              type="search"
+              placeholder="TOPICSタイトルで検索..."
+              class="form-input mb-6"
+            />
+            <div
+              id="admin-topics-list-card-container"
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            ></div>
+          </div>
+
+          <div id="topics-editor-view" class="view-container hidden mt-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-semibold" id="topics-editor-title">
+                新規TOPICS作成
+              </h3>
+              <button
+                id="back-to-topics-list"
+                class="text-sm bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-md transition-colors"
+              >
+                TOPICS一覧へ戻る
+              </button>
+            </div>
+            <div class="mb-4 flex space-x-2 border-b border-gray-700 pb-2">
+              <button
+                data-subtab-target="admin-topics-select-subtab"
+                class="admin-creation-subtab subtab-button active"
+              >
+                A. TOPICS選択
+              </button>
+              <button
+                data-subtab-target="admin-topics-template-subtab"
+                class="admin-creation-subtab subtab-button"
+              >
+                B. テンプレート出力
+              </button>
+              <button
+                data-subtab-target="admin-topics-preview-subtab"
+                class="admin-creation-subtab subtab-button"
+              >
+                C. プレビュー表示
+              </button>
+            </div>
+            <div
+              id="admin-topics-select-subtab"
+              class="admin-creation-subtab-content subtab-content admin-content-card p-6"
+            >
+              <div class="mb-4">
+                <label
+                  for="topics-title-editor"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >TOPICSタイトル</label
+                >
+                <input
+                  type="text"
+                  id="topics-title-editor"
+                  class="form-input"
+                  value="2025年5月号 LSI業界の最新動向"
+                />
+              </div>
+
+              <div class="flex flex-col md:flex-row gap-6">
+                <div
+                  class="w-full md:w-1/2 border border-gray-600 p-4 rounded-lg"
+                >
+                  <div
+                    class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2"
+                  >
+                    <h4 class="font-semibold text-lg">記事データベース</h4>
+                    <div class="toggle-switch-container">
+                      <span class="toggle-switch-label text-xs">表</span>
+                      <label class="toggle-switch">
+                        <input
+                          type="checkbox"
+                          id="admin-db-article-display-toggle"
+                          checked
+                        />
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <span class="toggle-switch-label ml-2 text-xs"
+                        >カード</span
+                      >
+                    </div>
+                  </div>
+                  <div class="flex gap-2 mb-2">
+                    <input
+                      type="date"
+                      class="form-input text-sm p-2"
+                      title="開始日"
+                    /><input
+                      type="date"
+                      class="form-input text-sm p-2"
+                      title="終了日"
+                    />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="ラベルで絞り込み..."
+                    class="form-input mb-2 text-sm p-2"
+                  />
+                  <input
+                    type="search"
+                    placeholder="記事検索..."
+                    class="form-input mb-4 text-sm p-2"
+                  />
+
+                  <div
+                    id="admin-db-article-card-view"
+                    class="grid grid-cols-1 gap-3 h-64 overflow-y-auto pr-1"
+                  ></div>
+                  <div
+                    id="admin-db-article-table-view"
+                    class="h-64 overflow-y-auto hidden"
+                  >
+                    <table class="w-full text-sm article-table">
+                      <thead class="sticky top-0 bg-gray-800">
+                        <tr>
+                          <th>選択</th>
+                          <th>タイトル</th>
+                          <th>出典</th>
+                          <th>要約</th>
+                          <th>ラベル</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+                <div
+                  class="w-full md:w-auto flex md:flex-col items-center justify-center gap-4 py-4 md:py-0"
+                >
+                  <button
+                    id="add-to-selected-articles-btn"
+                    class="p-3 bg-gray-600 hover:bg-gray-500 rounded-full text-white"
+                    title="選択済みへ追加"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    id="remove-from-selected-articles-btn"
+                    class="p-3 bg-gray-600 hover:bg-gray-500 rounded-full text-white"
+                    title="選択済みから削除"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div
+                  class="w-full md:w-1/2 border border-gray-600 p-4 rounded-lg"
+                >
+                  <div
+                    class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2"
+                  >
+                    <h4 class="font-semibold text-lg">選択済み記事</h4>
+                    <div class="toggle-switch-container">
+                      <span class="toggle-switch-label text-xs">表</span>
+                      <label class="toggle-switch">
+                        <input
+                          type="checkbox"
+                          id="admin-selected-article-display-toggle"
+                          checked
+                        />
+                        <span class="toggle-slider"></span>
+                      </label>
+                      <span class="toggle-switch-label ml-2 text-xs"
+                        >カード</span
+                      >
+                    </div>
+                  </div>
+                  <input
+                    type="search"
+                    placeholder="選択済み記事を検索..."
+                    class="form-input mb-4 text-sm p-2"
+                  />
+                  <div
+                    id="admin-selected-article-card-view"
+                    class="grid grid-cols-1 gap-3 h-64 overflow-y-auto pr-1"
+                  ></div>
+                  <div
+                    id="admin-selected-article-table-view"
+                    class="h-64 overflow-y-auto hidden"
+                  >
+                    <table class="w-full text-sm article-table">
+                      <thead class="sticky top-0 bg-gray-800">
+                        <tr>
+                          <th>選択</th>
+                          <th>タイトル</th>
+                          <th>出典</th>
+                          <th>要約</th>
+                          <th>ラベル</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              id="admin-topics-template-subtab"
+              class="admin-creation-subtab-content subtab-content hidden admin-content-card p-6"
+            >
+              <h3 class="text-xl font-semibold mb-4">
+                テンプレートへの出力設定
+              </h3>
+              <div class="mb-6">
+                <label
+                  for="monthly-summary"
+                  class="block text-sm font-medium text-gray-300 mb-1"
+                  >月次まとめ</label
+                ><textarea
+                  id="monthly-summary"
+                  rows="5"
+                  class="form-textarea"
+                  placeholder="今月の総括を入力..."
+                ></textarea
+                ><button
+                  class="mt-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-3 rounded-md text-sm transition duration-300"
+                >
+                  LLMで自動生成
+                </button>
+              </div>
+              <h4 class="text-lg font-semibold mb-3">
+                選択した記事のカテゴリ設定
+              </h4>
+              <div id="template-selected-articles-list" class="space-y-4"></div>
+              <button
+                class="mt-6 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300"
+              >
+                プレビュー表示へ進む
+              </button>
+            </div>
+            <div
+              id="admin-topics-preview-subtab"
+              class="admin-creation-subtab-content subtab-content hidden admin-content-card p-6"
+            >
+              <h3 class="text-xl font-semibold mb-4">TOPICSプレビュー</h3>
+              <div
+                class="border border-gray-600 p-6 rounded-lg bg-gray-800 min-h-[300px] mb-6"
+              >
+                <h2 class="text-2xl font-bold mb-1 text-yellow-300">
+                  2025年5月号 LSI業界の最新動向
+                </h2>
+                <p class="text-xs text-gray-400 mb-4">作成日: 2025/05/18</p>
+                <p class="mb-4 text-gray-200">...</p>
+                <h3 class="text-xl font-semibold mt-6 mb-3 text-sky-300">
+                  今月のTOPICS
+                </h3>
+                <div class="mb-4">
+                  <h4 class="text-lg font-semibold text-blue-300">技術動向</h4>
+                  <div class="ml-4 mt-2 space-y-3">
+                    <article>
+                      <h5 class="font-medium">次世代AIチップの展望</h5>
+                      <p class="text-xs text-gray-500">
+                        ITmedia | 2025/05/17 - AIプロセッサ
+                      </p>
+                      <p class="text-sm text-gray-300">要約: ...</p>
+                      <span
+                        class="text-xs bg-blue-500 text-white px-1.5 py-0.5 rounded-full"
+                        >AI</span
+                      >
+                    </article>
+                  </div>
+                </div>
+              </div>
+              <div class="flex gap-4">
+                <button
+                  class="bg-gray-600 hover:bg-gray-500 text-white font-semibold py-2 px-4 rounded-md transition duration-300"
+                >
+                  HTML表示</button
+                ><button
+                  class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300"
+                >
+                  HTMLダウンロード
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-gray-950 text-gray-300 text-center p-6 relative z-5">
+      <div class="container mx-auto">
+        <p class="mb-2">&copy; 2025 LSI戦略コミッティ. All rights reserved.</p>
+        <p class="text-sm">
+          <a href="#" class="hover:text-blue-300 transition-colors"
+            >プライバシーポリシー</a
+          >
+          |
+          <a href="#" class="hover:text-blue-300 transition-colors">利用規約</a>
+          |
+          <a
+            href="#"
+            data-target="access-request-section"
+            class="nav-link hover:text-blue-300 transition-colors"
+            >お問い合わせ</a
+          >
+          |
+          <a
+            href="#"
+            data-target="admin-section"
+            class="nav-link hover:text-yellow-300 transition-colors"
+            >管理者用</a
+          >
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const navLinks = document.querySelectorAll(".nav-link");
+        const pageSections = document.querySelectorAll(".page-section");
+        const mobileMenuButton = document.getElementById("mobile-menu-button");
+        const mobileMenu = document.getElementById("mobile-menu");
+        const videoBackgroundContainer = document.getElementById(
+          "video-background-container"
+        );
+        const initialSectionId = "welcome-section";
+
+        const topicsListView = document.getElementById("topics-list-view");
+        const topicsEditorView = document.getElementById("topics-editor-view");
+        const showTopicsEditorNewButton = document.getElementById(
+          "show-topics-editor-new"
+        );
+        const backToTopicsListButton = document.getElementById(
+          "back-to-topics-list"
+        );
+        const topicsEditorTitle = document.getElementById(
+          "topics-editor-title"
+        );
+        const topicsTitleEditorInput = document.getElementById(
+          "topics-title-editor"
+        );
+
+        const topicsDetailSection = document.getElementById(
+          "topics-detail-section"
+        );
+        const topicsDetailTitle = document.getElementById(
+          "topics-detail-title"
+        );
+        const topicsDetailPublishDate = document.getElementById(
+          "topics-detail-publish-date"
+        );
+        const topicsDetailSummary = document.getElementById(
+          "topics-detail-summary"
+        );
+        const topicsDetailArticlesContainer = document.getElementById(
+          "topics-detail-articles-container"
+        );
+        const backToTopicsListFromDetailButton = document.getElementById(
+          "back-to-topics-list-from-detail"
+        );
+        const articleDetailSection = document.getElementById(
+          "article-detail-section"
+        );
+        const articleDetailTitle = document.getElementById(
+          "article-detail-title"
+        );
+        const articleDetailThumbnail = document.getElementById(
+          "article-detail-thumbnail"
+        );
+        const articleDetailMeta = document.getElementById(
+          "article-detail-meta"
+        );
+        const articleDetailSummary = document.getElementById(
+          "article-detail-summary"
+        );
+        const articleDetailLabels = document.getElementById(
+          "article-detail-labels"
+        );
+        const articleDetailSourceLink = document.getElementById(
+          "article-detail-source-link"
+        );
+        const backToAdminArticleListBtn = document.getElementById(
+          "back-to-admin-article-list-btn"
+        );
+        const articleDetailFullText = document.getElementById(
+          "article-detail-fulltext"
+        );
+
+        const trendResearchDetailSection = document.getElementById(
+          "research-detail-section"
+        );
+        const trendDetailTitle = document.getElementById("trend-detail-title");
+        const trendDetailSpeaker = document.getElementById(
+          "trend-detail-speaker"
+        );
+        const trendDetailDepartment = document.getElementById(
+          "trend-detail-department"
+        );
+        const trendDetailVideo = document.getElementById("trend-detail-video");
+        const trendDetailPdfLink = document.getElementById(
+          "trend-detail-pdf-link"
+        );
+        const trendDetailAgenda = document.getElementById(
+          "trend-detail-agenda"
+        );
+        const backToTrendListFromDetailButton = document.getElementById(
+          "back-to-trend-list-from-detail"
+        );
+        const trendDetailPdfPreviewPlaceholder = document.getElementById(
+          "trend-detail-pdf-preview-placeholder"
+        );
+
+        const adminTrendReportsListView = document.getElementById(
+          "admin-trend-reports-list-view"
+        );
+        const adminTrendReportEditorView = document.getElementById(
+          "admin-trend-report-editor-view"
+        );
+        const adminNewTrendReportButton = document.getElementById(
+          "admin-new-trend-report-btn"
+        );
+        const adminBackToTrendReportsListButton = document.getElementById(
+          "admin-back-to-trend-reports-list-btn"
+        );
+        const adminTrendReportEditorTitle = document.getElementById(
+          "admin-trend-report-editor-title"
+        );
+        const trendReportTitleInput =
+          document.getElementById("trend-report-title");
+        const adminTrendReportsCardContainer = document.getElementById(
+          "admin-trend-reports-card-container"
+        );
+        const adminTopicsListCardContainer = document.getElementById(
+          "admin-topics-list-card-container"
+        );
+
+        const adminArticleListDisplayToggle = document.getElementById(
+          "admin-article-list-display-toggle"
+        );
+        const adminArticleListCardView = document.getElementById(
+          "admin-article-list-card-view"
+        );
+        const adminArticleListTableView = document.getElementById(
+          "admin-article-list-table-view"
+        );
+        const adminDeleteSelectedArticlesBtn = document.getElementById(
+          "admin-delete-selected-articles-btn"
+        );
+
+        const adminDbArticleDisplayToggle = document.getElementById(
+          "admin-db-article-display-toggle"
+        );
+        const adminDbArticleCardView = document.getElementById(
+          "admin-db-article-card-view"
+        );
+        const adminDbArticleTableView = document.getElementById(
+          "admin-db-article-table-view"
+        );
+
+        const addToSelectedArticlesBtn = document.getElementById(
+          "add-to-selected-articles-btn"
+        );
+        const removeFromSelectedArticlesBtn = document.getElementById(
+          "remove-from-selected-articles-btn"
+        );
+        const adminSelectedArticleCardView = document.getElementById(
+          "admin-selected-article-card-view"
+        );
+        const adminSelectedArticleTableView = document.getElementById(
+          "admin-selected-article-table-view"
+        );
+        const adminSelectedArticleDisplayToggle = document.getElementById(
+          "admin-selected-article-display-toggle"
+        );
+        const templateSelectedArticlesList = document.getElementById(
+          "template-selected-articles-list"
+        );
+
+        // --- ダミーデータ ---
+        let dbArticles = [
+          {
+            id: "db-article-001",
+            title: "次世代AIチップの展望",
+            source: "ITmedia",
+            date: "2025/05/17",
+            summary:
+              "非常に高性能なAIチップが開発され、今後の技術革新に期待が寄せられています。特に推論処理能力の向上と低消費電力化が鍵となります。",
+            labels: ["AI", "チップ", "高性能"],
+            thumbnailUrl:
+              "https://placehold.co/300x180/0284c7/ffffff?text=AIチップ",
+            articleUrl: "https://www.itmedia.co.jp/",
+            fullText:
+              "（ここに記事の全文が入ります。このデモでは省略しています。）",
+          },
+          {
+            id: "db-article-002",
+            title: "チップレット技術の進展",
+            source: "マイナビニュース",
+            date: "2025/05/15",
+            summary:
+              "複数の異なる機能を持つチップレットを組み合わせることで、開発期間の短縮とコスト削減が期待されています。インターフェースの標準化が課題です。",
+            labels: ["チップレット", "パッケージング"],
+            thumbnailUrl:
+              "https://placehold.co/300x180/16a34a/ffffff?text=チップレット",
+            articleUrl: "https://news.mynavi.jp/",
+            fullText: "（ここに記事の全文が入ります。）",
+          },
+          {
+            id: "db-article-003",
+            title: "EUVリソグラフィの最新動向",
+            source: "EE Times Japan",
+            date: "2025/05/12",
+            summary:
+              "ASMLの最新EUV装置の導入状況と、それによる2nm以下のプロセスノード実現に向けた各社の取り組みを解説します。",
+            labels: ["EUV", "製造プロセス", "微細化"],
+            thumbnailUrl:
+              "https://placehold.co/300x180/ca8a04/ffffff?text=EUV露光",
+            articleUrl: "https://eetimes.itmedia.co.jp/ee/",
+            fullText: "（ここに記事の全文が入ります。）",
+          },
+          {
+            id: "db-article-004",
+            title: "SiCパワー半導体の市場拡大",
+            source: "日経クロステック",
+            date: "2025/05/10",
+            summary:
+              "電気自動車(EV)や再生可能エネルギー分野での需要増を背景に、SiCパワー半導体市場が急速に拡大しています。供給体制の強化が急務です。",
+            labels: ["SiC", "パワー半導体", "EV"],
+            thumbnailUrl:
+              "https://placehold.co/300x180/7c3aed/ffffff?text=SiCパワー",
+            articleUrl: "https://xtech.nikkei.com/",
+            fullText: "（ここに記事の全文が入ります。）",
+          },
+        ];
+        let selectedArticles = [
+          {
+            id: "db-article-001",
+            title: "次世代AIチップの展望",
+            source: "ITmedia",
+            date: "2025/05/17",
+            summary:
+              "非常に高性能なAIチップが開発され、今後の技術革新に期待が寄せられています。特に推論処理能力の向上と低消費電力化が鍵となります。",
+            labels: ["AI", "チップ", "高性能"],
+            thumbnailUrl:
+              "https://placehold.co/300x180/0284c7/ffffff?text=AIチップ",
+            articleUrl: "https://www.itmedia.co.jp/",
+            fullText: "（ここに記事の全文が入ります。）",
+          },
+        ];
+
+        const topicsSampleData = {
+          "topics-2025-05": {
+            id: "topics-2025-05",
+            title: "2025年5月号 TOPICS",
+            publishDate: "配信日: 2025年5月1日",
+            articleCount: 3,
+            createdDate: "2025/05/01",
+            updatedDate: "2025/05/02",
+            summary:
+              "今月の半導体業界は、特に量子コンピューティング向けLSIの最新開発状況やEUVリソグラフィ技術の進展が注目されました。また、サステナブルな半導体製造への取り組みも加速しています。",
+            categories: [
+              {
+                name: "技術動向",
+                articles: [
+                  {
+                    title: "量子コンピューティング向けLSIの最新開発状況",
+                    source: "TechNews",
+                    date: "2025/05/10",
+                    subCategory: "量子LSI",
+                    summary:
+                      "量子ビットの安定性と集積度向上に向けた新しいアーキテクチャが提案され、実用化への期待が高まっています。",
+                    labels: ["量子", "LSI", "新技術"],
+                  },
+                  {
+                    title: "EUVリソグラフィ技術の進展と課題",
+                    source: "Semicon Journal",
+                    date: "2025/05/08",
+                    subCategory: "製造技術",
+                    summary:
+                      "次世代EUV光源の開発が進み、更なる微細化への道が開かれつつありますが、コストとスループットの課題は依然として残ります。",
+                    labels: ["EUV", "リソグラフィ", "製造プロセス"],
+                  },
+                ],
+              },
+              {
+                name: "市場トレンド",
+                articles: [
+                  {
+                    title: "サステナブルな半導体製造への取り組み",
+                    source: "EcoBiz Online",
+                    date: "2025/05/05",
+                    subCategory: "環境対応",
+                    summary:
+                      "主要メーカー各社が、使用電力の削減やリサイクル材料の活用など、環境負荷低減に向けた具体的な目標と計画を発表しています。",
+                    labels: ["サステナブル", "製造", "CSR"],
+                  },
+                ],
+              },
+            ],
+          },
+          "topics-2025-04": {
+            id: "topics-2025-04",
+            title: "2025年4月号 TOPICS",
+            publishDate: "配信日: 2025年4月1日",
+            articleCount: 3,
+            createdDate: "2025/04/01",
+            updatedDate: "2025/04/03",
+            summary:
+              "メモリ技術の進化が著しく、次世代規格の具体的なロードマップが示されました。また、オープンソースハードウェアの採用拡大や、地政学リスクへの対応も重要なテーマとなっています。",
+            categories: [
+              {
+                name: "注目技術",
+                articles: [
+                  {
+                    title: "メモリ技術のロードマップ解説 (DDR6, HBM4)",
+                    source: "Computer Hardware",
+                    date: "2025/04/15",
+                    subCategory: "メモリ",
+                    summary:
+                      "DDR6およびHBM4の規格策定が進み、帯域幅の大幅な向上が見込まれます。AIやHPC分野での活用が期待されます。",
+                    labels: ["DDR6", "HBM4", "メモリ"],
+                  },
+                  {
+                    title: "オープンソースハードウェア(RISC-V)の動向",
+                    source: "OpenHW World",
+                    date: "2025/04/10",
+                    subCategory: "CPUアーキテクチャ",
+                    summary:
+                      "RISC-Vベースのカスタムチップ開発が活発化しており、特にIoTや特定用途向けプロセッサでの採用事例が増加しています。",
+                    labels: ["RISC-V", "オープンソース", "CPU"],
+                  },
+                ],
+              },
+              {
+                name: "業界分析",
+                articles: [
+                  {
+                    title: "半導体サプライチェーンの地政学的リスク分析",
+                    source: "Global Business Review",
+                    date: "2025/04/05",
+                    subCategory: "サプライチェーン",
+                    summary:
+                      "特定地域への依存度が高い現状に対し、各国政府や企業が供給網の多様化と強靭化に向けた戦略を推進しています。",
+                    labels: ["サプライチェーン", "地政学", "リスク管理"],
+                  },
+                ],
+              },
+            ],
+          },
+        };
+
+        const trendResearchSampleData = {
+          "report-001": {
+            id: "report-001",
+            title: "SS事業部向け講演会: 次世代半導体とLSI戦略",
+            speaker: "山田 太郎",
+            department: "先端技術研究部 部長",
+            publishDate: "2025-05-20",
+            lastUpdated: "2025-05-21",
+            agenda: [
+              "半導体業界の最新動向とメガトレンド",
+              "次世代半導体材料 (SiC, GaN) の可能性と課題",
+              "AIチップ設計におけるチップレット技術の重要性",
+              "当社のLSI戦略と今後の研究開発ロードマップ",
+              "質疑応答",
+            ],
+            videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+            posterUrl:
+              "https://placehold.co/1280x720/1f2937/ffffff?text=講演動画再生エリア",
+            pdfUrl: "dummy.pdf",
+          },
+          "report-002": {
+            id: "report-002",
+            title: "AIチップ市場の競争環境と将来予測",
+            speaker: "佐藤 花子",
+            department: "市場調査部 アナリスト",
+            publishDate: "2025-04-15",
+            lastUpdated: "2025-04-18",
+            agenda: [
+              "現在のAIチップ市場概況（主要プレイヤーとシェア）",
+              "用途別市場動向（データセンター、エッジAI、自動運転）",
+              "技術トレンドとイノベーション（アーキテクチャ、プロセス微細化）",
+              "地政学的リスクとサプライチェーンへの影響",
+              "2030年までの市場予測と成長機会",
+            ],
+            videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+            posterUrl:
+              "https://placehold.co/1280x720/1f2937/ffffff?text=講演動画再生エリア",
+            pdfUrl: "dummy.pdf",
+          },
+          "report-003": {
+            id: "report-003",
+            title: "チップレット技術が切り開く半導体の未来",
+            speaker: "鈴木 一郎",
+            department: "LSI設計部 主任研究員",
+            publishDate: "2025-03-10",
+            lastUpdated: "2025-03-12",
+            agenda: [
+              "チップレット技術の基礎とメリット",
+              "主要なインターコネクト技術（UCIeなど）の比較",
+              "設計・製造における課題と解決策",
+              "応用事例と今後の市場展望",
+              "標準化とエコシステム形成の重要性",
+            ],
+            videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+            posterUrl:
+              "https://placehold.co/1280x720/1f2937/ffffff?text=講演動画再生エリア",
+            pdfUrl: "dummy.pdf",
+          },
+        };
+
+        function showSection(targetId) {
+          pageSections.forEach((section) => section.classList.add("hidden"));
+          const targetSection = document.getElementById(targetId);
+          if (targetSection) targetSection.classList.remove("hidden");
+
+          document.querySelectorAll(".nav-link").forEach((link) => {
+            link.classList.remove("active");
+            if (
+              link.dataset.target === targetId &&
+              !link.classList.contains("nav-logo")
+            ) {
+              link.classList.add("active");
+            }
+          });
+
+          if (videoBackgroundContainer) {
+            videoBackgroundContainer.style.display =
+              targetId === "welcome-section" ? "block" : "none";
+          }
+
+          if (mobileMenu && !mobileMenu.classList.contains("hidden"))
+            mobileMenu.classList.add("hidden");
+          window.scrollTo(0, 0);
+
+          if (targetId === "admin-topics-management-section") {
+            const firstMainTab = document.querySelector(
+              '.admin-main-tab[data-tab-target="admin-topics-collect-tab"]'
+            );
+            if (firstMainTab && !firstMainTab.classList.contains("active")) {
+              switchAdminMainTab(firstMainTab);
+            } else if (!document.querySelector(".admin-main-tab.active")) {
+              if (firstMainTab) switchAdminMainTab(firstMainTab);
+            }
+            const activeMainTabTarget = document.querySelector(
+              ".admin-main-tab.active"
+            )?.dataset.tabTarget;
+            if (activeMainTabTarget === "admin-topics-creation-tab") {
+              renderAdminTopicsListCards();
+              showTopicsList();
+              renderDbArticles();
+              renderSelectedArticlesForTemplate();
+            }
+            if (activeMainTabTarget === "admin-topics-list-tab") {
+              if (adminArticleListDisplayToggle)
+                adminArticleListDisplayToggle.checked = true;
+              toggleAdminArticleListView(true);
+            }
+          } else if (targetId === "admin-trend-reports-management-section") {
+            renderAdminTrendReportsCards();
+            showAdminTrendReportsList();
+          }
+        }
+
+        navLinks.forEach((link) => {
+          link.addEventListener("click", function (event) {
+            event.preventDefault();
+            const targetId = this.dataset.target;
+            if (targetId) showSection(targetId);
+          });
+        });
+
+        if (mobileMenuButton && mobileMenu) {
+          mobileMenuButton.addEventListener("click", () =>
+            mobileMenu.classList.toggle("hidden")
+          );
+        }
+        showSection(initialSectionId);
+
+        const adminMainTabs = document.querySelectorAll(".admin-main-tab");
+        const adminMainTabContents = document.querySelectorAll(
+          ".admin-main-tab-content"
+        );
+        function switchAdminMainTab(clickedTab) {
+          adminMainTabs.forEach((tab) => tab.classList.remove("active"));
+          clickedTab.classList.add("active");
+          const targetContentId = clickedTab.dataset.tabTarget;
+          adminMainTabContents.forEach((content) => {
+            content.classList.toggle("hidden", content.id !== targetContentId);
+          });
+          if (targetContentId === "admin-topics-creation-tab") {
+            renderAdminTopicsListCards();
+            showTopicsList();
+            renderDbArticles();
+            renderSelectedArticlesForTemplate();
+          } else if (targetContentId === "admin-topics-list-tab") {
+            if (adminArticleListDisplayToggle)
+              adminArticleListDisplayToggle.checked = true;
+            toggleAdminArticleListView(true);
+          } else {
+            if (topicsEditorView) topicsEditorView.classList.add("hidden");
+            if (
+              topicsListView &&
+              document
+                .getElementById("admin-topics-creation-tab")
+                ?.contains(topicsListView)
+            ) {
+              topicsListView.classList.add("hidden");
+            }
+          }
+        }
+        adminMainTabs.forEach((tab) =>
+          tab.addEventListener("click", () => switchAdminMainTab(tab))
+        );
+
+        const adminCollectSubTabs = document.querySelectorAll(
+          ".admin-collect-subtab"
+        );
+        const adminCollectSubTabContents = document.querySelectorAll(
+          ".admin-collect-subtab-content"
+        );
+        function switchAdminCollectSubTab(clickedSubTab) {
+          adminCollectSubTabs.forEach((subtab) =>
+            subtab.classList.remove("active")
+          );
+          clickedSubTab.classList.add("active");
+          const targetContentId = clickedSubTab.dataset.subtabTarget;
+          adminCollectSubTabContents.forEach((content) => {
+            content.classList.toggle("hidden", content.id !== targetContentId);
+          });
+        }
+        adminCollectSubTabs.forEach((subtab) =>
+          subtab.addEventListener("click", () =>
+            switchAdminCollectSubTab(subtab)
+          )
+        );
+
+        const adminCreationSubTabs = document.querySelectorAll(
+          ".admin-creation-subtab"
+        );
+        const adminCreationSubTabContents = document.querySelectorAll(
+          ".admin-creation-subtab-content"
+        );
+        function switchAdminCreationSubTab(clickedSubTab) {
+          adminCreationSubTabs.forEach((subtab) =>
+            subtab.classList.remove("active")
+          );
+          clickedSubTab.classList.add("active");
+          const targetContentId = clickedSubTab.dataset.subtabTarget;
+          adminCreationSubTabContents.forEach((content) => {
+            content.classList.toggle("hidden", content.id !== targetContentId);
+          });
+          if (targetContentId === "admin-topics-template-subtab") {
+            renderSelectedArticlesForTemplate();
+          }
+        }
+        adminCreationSubTabs.forEach((subtab) =>
+          subtab.addEventListener("click", () =>
+            switchAdminCreationSubTab(subtab)
+          )
+        );
+
+        function showTopicsList() {
+          if (topicsListView) topicsListView.classList.remove("hidden");
+          if (topicsEditorView) topicsEditorView.classList.add("hidden");
+        }
+
+        function showTopicsEditor(
+          isNew = true,
+          topicTitleFromList = "202X年X月号 LSI業界の最新動向"
+        ) {
+          if (topicsListView) topicsListView.classList.add("hidden");
+          if (topicsEditorView) topicsEditorView.classList.remove("hidden");
+
+          const defaultNewTitle = "新規TOPICSタイトル（例: 202X年X月号）";
+          if (topicsEditorTitle) {
+            topicsEditorTitle.textContent = isNew
+              ? "新規TOPICS作成"
+              : `TOPICS編集`;
+          }
+          if (topicsTitleEditorInput) {
+            topicsTitleEditorInput.value = isNew
+              ? defaultNewTitle
+              : topicTitleFromList;
+            if (isNew) topicsTitleEditorInput.placeholder = defaultNewTitle;
+          }
+          renderDbArticles();
+          selectedArticles = [];
+          renderSelectedArticles();
+          renderSelectedArticlesForTemplate();
+
+          const firstCreationSubTab = document.querySelector(
+            '.admin-creation-subtab[data-subtab-target="admin-topics-select-subtab"]'
+          );
+          if (firstCreationSubTab)
+            switchAdminCreationSubTab(firstCreationSubTab);
+        }
+
+        if (showTopicsEditorNewButton) {
+          showTopicsEditorNewButton.addEventListener("click", () =>
+            showTopicsEditor(true)
+          );
+        }
+
+        if (backToTopicsListButton) {
+          backToTopicsListButton.addEventListener("click", showTopicsList);
+        }
+
+        function addEditTopicButtonEventListener(button) {
+          button.addEventListener("click", function () {
+            const topicTitleFromList = this.dataset.topicTitleEdit;
+            showTopicsEditor(false, topicTitleFromList);
+          });
+        }
+
+        const firstCollectSubTab = document.querySelector(
+          '.admin-collect-subtab[data-subtab-target="admin-topics-rss-collect-subtab"]'
+        );
+        if (firstCollectSubTab) switchAdminCollectSubTab(firstCollectSubTab);
+
+        document.querySelectorAll(".read-topic-btn").forEach((button) => {
+          button.addEventListener("click", function () {
+            const topicId = this.dataset.topicId;
+            const topicData = topicsSampleData[topicId];
+
+            if (topicData && topicsDetailSection) {
+              if (topicsDetailTitle)
+                topicsDetailTitle.textContent = topicData.title;
+              if (topicsDetailPublishDate)
+                topicsDetailPublishDate.textContent = topicData.publishDate;
+              if (topicsDetailSummary)
+                topicsDetailSummary.innerHTML = `<p>${topicData.summary.replace(
+                  /\n/g,
+                  "</p><p>"
+                )}</p>`;
+
+              if (topicsDetailArticlesContainer) {
+                topicsDetailArticlesContainer.innerHTML = "";
+                topicData.categories.forEach((category) => {
+                  const categoryDiv = document.createElement("div");
+                  categoryDiv.className = "mb-6";
+                  const categoryTitle = document.createElement("h3");
+                  categoryTitle.className =
+                    "text-xl font-semibold text-blue-300 mb-3";
+                  categoryTitle.textContent = category.name;
+                  categoryDiv.appendChild(categoryTitle);
+                  const articlesListDiv = document.createElement("div");
+                  articlesListDiv.className = "ml-4 space-y-4";
+                  category.articles.forEach((article) => {
+                    const articleElement = document.createElement("article");
+                    articleElement.className =
+                      "pb-3 border-b border-gray-700 last:border-b-0";
+                    const titleEl = document.createElement("h4");
+                    titleEl.className =
+                      "font-medium text-lg text-gray-100 mb-1";
+                    titleEl.textContent = article.title;
+                    articleElement.appendChild(titleEl);
+                    const metaEl = document.createElement("p");
+                    metaEl.className = "text-xs text-gray-400 mb-1";
+                    metaEl.textContent = `${article.source} | ${article.date} - ${article.subCategory}`;
+                    articleElement.appendChild(metaEl);
+                    const summaryEl = document.createElement("p");
+                    summaryEl.className =
+                      "text-sm text-gray-300 leading-relaxed mb-2";
+                    summaryEl.textContent = article.summary;
+                    articleElement.appendChild(summaryEl);
+                    if (article.labels && article.labels.length > 0) {
+                      const labelsDiv = document.createElement("div");
+                      labelsDiv.className = "flex flex-wrap gap-2";
+                      article.labels.forEach((label) => {
+                        const labelSpan = document.createElement("span");
+                        labelSpan.className =
+                          "text-xs bg-sky-600 text-sky-100 px-2 py-0.5 rounded-full";
+                        labelSpan.textContent = label;
+                        labelsDiv.appendChild(labelSpan);
+                      });
+                      articleElement.appendChild(labelsDiv);
+                    }
+                    articlesListDiv.appendChild(articleElement);
+                  });
+                  categoryDiv.appendChild(articlesListDiv);
+                  topicsDetailArticlesContainer.appendChild(categoryDiv);
+                });
+              }
+              showSection("topics-detail-section");
+            } else {
+              console.error("Topic data not found for ID:", topicId);
+            }
+          });
+        });
+
+        if (backToTopicsListFromDetailButton) {
+          backToTopicsListFromDetailButton.addEventListener(
+            "click",
+            function () {
+              showSection("topics-section");
+            }
+          );
+        }
+
+        document
+          .querySelectorAll(".read-trend-report-btn")
+          .forEach((button) => {
+            button.addEventListener("click", function () {
+              const reportId = this.dataset.reportId;
+              const reportData = trendResearchSampleData[reportId];
+
+              if (reportData && trendResearchDetailSection) {
+                if (trendDetailTitle)
+                  trendDetailTitle.textContent = reportData.title;
+                if (trendDetailSpeaker)
+                  trendDetailSpeaker.textContent = reportData.speaker;
+                if (trendDetailDepartment)
+                  trendDetailDepartment.textContent = reportData.department;
+
+                if (trendDetailVideo) {
+                  trendDetailVideo.innerHTML = "";
+                  const sourceElement = document.createElement("source");
+                  sourceElement.src = reportData.videoUrl;
+                  sourceElement.type = "video/mp4";
+                  trendDetailVideo.appendChild(sourceElement);
+                  trendDetailVideo.poster = reportData.posterUrl;
+                  trendDetailVideo.load();
+                }
+                if (trendDetailPdfLink)
+                  trendDetailPdfLink.href = reportData.pdfUrl;
+
+                if (trendDetailPdfPreviewPlaceholder)
+                  trendDetailPdfPreviewPlaceholder.classList.remove("hidden");
+
+                if (trendDetailAgenda) {
+                  trendDetailAgenda.innerHTML = "";
+                  const ul = document.createElement("ul");
+                  ul.className = "list-disc list-inside space-y-1";
+                  reportData.agenda.forEach((item) => {
+                    const li = document.createElement("li");
+                    li.textContent = item;
+                    ul.appendChild(li);
+                  });
+                  trendDetailAgenda.appendChild(ul);
+                }
+                showSection("research-detail-section");
+              } else {
+                console.error(
+                  "Trend research report data not found for ID:",
+                  reportId
+                );
+              }
+            });
+          });
+
+        if (backToTrendListFromDetailButton) {
+          backToTrendListFromDetailButton.addEventListener(
+            "click",
+            function () {
+              showSection("research-section");
+            }
+          );
+        }
+
+        function showAdminTrendReportsList() {
+          if (adminTrendReportsListView)
+            adminTrendReportsListView.classList.remove("hidden");
+          if (adminTrendReportEditorView)
+            adminTrendReportEditorView.classList.add("hidden");
+        }
+
+        function showAdminTrendReportEditor(
+          isNew = true,
+          reportIdToEdit = null
+        ) {
+          if (adminTrendReportsListView)
+            adminTrendReportsListView.classList.add("hidden");
+          if (adminTrendReportEditorView)
+            adminTrendReportEditorView.classList.remove("hidden");
+
+          if (adminTrendReportEditorTitle) {
+            adminTrendReportEditorTitle.textContent = isNew
+              ? "新規レポート作成"
+              : "レポート編集";
+          }
+
+          if (isNew) {
+            if (trendReportTitleInput) trendReportTitleInput.value = "";
+            document.getElementById("trend-report-speaker").value = "";
+            document.getElementById("trend-report-department").value = "";
+            document.getElementById("trend-report-agenda").value = "";
+            document.getElementById("trend-report-video-url").value = "";
+            document.getElementById("trend-report-poster-url").value = "";
+            document.getElementById("trend-report-pdf-url").value = "";
+            document.getElementById("trend-report-publish-date").value = "";
+          } else if (
+            reportIdToEdit &&
+            trendResearchSampleData[reportIdToEdit]
+          ) {
+            const data = trendResearchSampleData[reportIdToEdit];
+            if (trendReportTitleInput) trendReportTitleInput.value = data.title;
+            document.getElementById("trend-report-speaker").value =
+              data.speaker;
+            document.getElementById("trend-report-department").value =
+              data.department;
+            document.getElementById("trend-report-agenda").value =
+              data.agenda.join("\n");
+            document.getElementById("trend-report-video-url").value =
+              data.videoUrl;
+            document.getElementById("trend-report-poster-url").value =
+              data.posterUrl;
+            document.getElementById("trend-report-pdf-url").value = data.pdfUrl;
+            document.getElementById("trend-report-publish-date").value =
+              data.publishDate;
+          }
+        }
+
+        if (adminNewTrendReportButton) {
+          adminNewTrendReportButton.addEventListener("click", () =>
+            showAdminTrendReportEditor(true)
+          );
+        }
+        if (adminBackToTrendReportsListButton) {
+          adminBackToTrendReportsListButton.addEventListener(
+            "click",
+            showAdminTrendReportsList
+          );
+        }
+        const adminCancelTrendReportBtn = document.getElementById(
+          "admin-cancel-trend-report-btn"
+        );
+        if (adminCancelTrendReportBtn) {
+          adminCancelTrendReportBtn.addEventListener(
+            "click",
+            showAdminTrendReportsList
+          );
+        }
+
+        function addAdminEditTrendReportButtonEventListener(button) {
+          button.addEventListener("click", function () {
+            const reportId = this.dataset.reportIdEdit;
+            showAdminTrendReportEditor(false, reportId);
+          });
+        }
+
+        function renderAdminTrendReportsCards() {
+          if (!adminTrendReportsCardContainer) return;
+          adminTrendReportsCardContainer.innerHTML = "";
+
+          Object.values(trendResearchSampleData).forEach((report) => {
+            const card = document.createElement("div");
+            card.className =
+              "admin-list-card p-6 flex flex-col justify-between";
+            card.innerHTML = `
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-300 mb-2 truncate" title="${report.title}">${report.title}</h3>
+                        <p class="text-sm text-gray-400 mb-1">講演者: ${report.speaker}</p>
+                        <p class="text-xs text-gray-500 mb-1">公開日: ${report.publishDate}</p>
+                        <p class="text-xs text-gray-500">最終更新日: ${report.lastUpdated}</p>
+                    </div>
+                    <div class="mt-4 flex justify-end space-x-2">
+                        <button data-report-id-edit="${report.id}" class="admin-edit-trend-report-btn text-sm bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded-md transition-colors">編集</button>
+                        <button class="text-sm bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded-md transition-colors">削除</button>
+                    </div>
+                `;
+            adminTrendReportsCardContainer.appendChild(card);
+            addAdminEditTrendReportButtonEventListener(
+              card.querySelector(".admin-edit-trend-report-btn")
+            );
+          });
+        }
+
+        function renderAdminTopicsListCards() {
+          const container = document.getElementById(
+            "admin-topics-list-card-container"
+          );
+          if (!container) {
+            const topicsListViewDiv =
+              document.getElementById("topics-list-view");
+            if (topicsListViewDiv) {
+              const newContainer = document.createElement("div");
+              newContainer.id = "admin-topics-list-card-container";
+              newContainer.className =
+                "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+              const existingTable =
+                topicsListViewDiv.querySelector(".overflow-x-auto");
+              if (existingTable) existingTable.classList.add("hidden");
+
+              const searchInput = topicsListViewDiv.querySelector(
+                'input[type="search"]'
+              );
+              if (searchInput && searchInput.nextSibling) {
+                searchInput.parentNode.insertBefore(
+                  newContainer,
+                  searchInput.nextSibling.nextSibling
+                );
+              } else if (searchInput) {
+                searchInput.parentNode.appendChild(newContainer);
+              } else {
+                topicsListViewDiv.appendChild(newContainer);
+              }
+              renderAdminTopicsListCards();
+            }
+            return;
+          }
+          container.innerHTML = "";
+
+          Object.values(topicsSampleData).forEach((topic) => {
+            const card = document.createElement("div");
+            card.className =
+              "admin-list-card p-6 flex flex-col justify-between";
+            card.innerHTML = `
+                    <div>
+                        <h4 class="text-lg font-semibold text-green-300 mb-2 truncate" title="${topic.title}">${topic.title}</h4>
+                        <p class="text-sm text-gray-400 mb-1">記事数: ${topic.articleCount}</p>
+                        <p class="text-xs text-gray-500 mb-1">作成日: ${topic.createdDate}</p>
+                        <p class="text-xs text-gray-500">更新日: ${topic.updatedDate}</p>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button data-topic-title-edit="${topic.title}" class="edit-topic-btn text-sm bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded-md transition-colors">編集</button>
+                    </div>
+                `;
+            container.appendChild(card);
+            addEditTopicButtonEventListener(
+              card.querySelector(".edit-topic-btn")
+            );
+          });
+        }
+
+        function setupDisplayToggle(
+          toggleId,
+          cardViewId,
+          tableViewId,
+          renderFunction,
+          articlesArray,
+          isArticleListTab = false
+        ) {
+          const toggle = document.getElementById(toggleId);
+          const cardView = document.getElementById(cardViewId);
+          const tableViewContainer = document.getElementById(tableViewId);
+          const tableViewTbody = tableViewContainer
+            ? tableViewContainer.querySelector("tbody")
+            : null;
+
+          function updateView(isCard) {
+            if (cardView && tableViewContainer) {
+              cardView.classList.toggle("hidden", !isCard);
+              tableViewContainer.classList.toggle("hidden", isCard);
+              const renderContainer = isCard ? cardView : tableViewTbody;
+              if (renderFunction && renderContainer) {
+                renderFunction(
+                  articlesArray,
+                  renderContainer,
+                  isCard,
+                  isArticleListTab
+                );
+              }
+            }
+          }
+
+          if (toggle) {
+            toggle.addEventListener("change", function () {
+              updateView(this.checked);
+            });
+            updateView(toggle.checked);
+          }
+        }
+
+        setupDisplayToggle(
+          "admin-article-list-display-toggle",
+          "admin-article-list-card-view",
+          "admin-article-list-table-view",
+          renderGenericArticles,
+          dbArticles,
+          true
+        );
+        setupDisplayToggle(
+          "admin-db-article-display-toggle",
+          "admin-db-article-card-view",
+          "admin-db-article-table-view",
+          renderGenericArticles,
+          dbArticles
+        );
+        setupDisplayToggle(
+          "admin-selected-article-display-toggle",
+          "admin-selected-article-card-view",
+          "admin-selected-article-table-view",
+          renderGenericArticles,
+          selectedArticles
+        );
+
+        function renderGenericArticles(
+          articles,
+          container,
+          isCardView,
+          isArticleListTab = false
+        ) {
+          if (!container) return;
+          container.innerHTML = "";
+
+          articles.forEach((article) => {
+            const checkboxHtml = `<input type="checkbox" value="${article.id}" class="form-checkbox mt-1 article-checkbox" data-article-id="${article.id}">`;
+
+            if (isCardView) {
+              const card = document.createElement("div");
+              card.className = isArticleListTab
+                ? "admin-main-list-card p-0 flex flex-col"
+                : "article-db-card p-0 flex flex-col";
+              card.innerHTML = `
+                        <img src="${
+                          article.thumbnailUrl ||
+                          "https://placehold.co/300x180/374151/9ca3af?text=No+Image"
+                        }" alt="記事サムネイル" class="card-thumbnail w-full ${
+                isArticleListTab ? "h-40" : "h-20"
+              } object-cover">
+                        <div class="card-content flex-grow flex flex-col justify-between p-3">
+                            <div>
+                                <div class="flex items-start mb-1">
+                                    ${checkboxHtml}
+                                    <h4 class="font-medium ${
+                                      isArticleListTab ? "text-lg" : "text-xs"
+                                    } ${
+                isArticleListTab ? "text-emerald-300" : "text-sky-300"
+              } truncate flex-grow ml-2 article-title-link cursor-pointer hover:underline" title="${
+                article.title
+              }" data-article-id="${article.id}">${article.title}</h4>
+                                </div>
+                                <p class="text-xs text-gray-400 mb-1">${
+                                  article.source
+                                } | ${article.date}</p>
+                                <p class="summary text-xs text-gray-300 mb-1 ${
+                                  isArticleListTab ? "line-clamp-3" : ""
+                                }">${article.summary}</p>
+                            </div>
+                            <div class="flex items-center justify-between mt-1">
+                                <div class="labels-container flex flex-wrap gap-1">
+                                    ${article.labels
+                                      .map(
+                                        (label) =>
+                                          `<span class="text-xs bg-gray-600 px-1.5 py-0.5 rounded-full">${label}</span>`
+                                      )
+                                      .join("")}
+                                </div>
+                                ${
+                                  isArticleListTab
+                                    ? `<a href="${
+                                        article.articleUrl || "#"
+                                      }" target="_blank" class="text-xs text-blue-400 hover:text-blue-300">元記事へ &rarr;</a>`
+                                    : ""
+                                }
+                            </div>
+                        </div>
+                    `;
+              container.appendChild(card);
+            } else {
+              const row = container.insertRow();
+              let rowContent = `<td class="py-2 px-2">${checkboxHtml}</td>`;
+
+              if (isArticleListTab) {
+                rowContent += `
+                            <td class="py-2 px-2"><img src="${
+                              article.thumbnailUrl ||
+                              "https://placehold.co/60x36/374151/9ca3af?text=N/A"
+                            }" alt="" class="h-9 w-auto rounded"></td>
+                            <td class="py-2 px-2 text-sm truncate article-title-link cursor-pointer hover:underline" title="${
+                              article.title
+                            }" data-article-id="${article.id}">${
+                  article.title
+                }</td>
+                            <td class="py-2 px-2 text-xs">${article.date} [${
+                  article.source
+                }]</td>
+                            <td class="py-2 px-2 text-xs summary">${
+                              article.summary
+                            }</td>
+                            <td class="py-2 px-2 text-xs">${article.labels.join(
+                              ", "
+                            )}</td>
+                        `;
+              } else {
+                rowContent += `
+                            <td class="py-2 px-2 text-sm truncate article-title-link cursor-pointer hover:underline" title="${
+                              article.title
+                            }" data-article-id="${article.id}">${
+                  article.title
+                }</td>
+                            <td class="py-2 px-2 text-xs">${article.source}</td>
+                            <td class="py-2 px-2 text-xs summary">${
+                              article.summary
+                            }</td>
+                            <td class="py-2 px-2 text-xs">${article.labels.join(
+                              ", "
+                            )}</td>
+                        `;
+              }
+              row.innerHTML = rowContent;
+            }
+          });
+          if (
+            isArticleListTab ||
+            containerId === "admin-db-article-card-view" ||
+            containerId === "admin-db-article-table-view" ||
+            containerId === "admin-selected-article-card-view" ||
+            containerId === "admin-selected-article-table-view"
+          ) {
+            container
+              .querySelectorAll(".article-title-link")
+              .forEach((link) => {
+                link.addEventListener("click", function () {
+                  const articleId = this.dataset.articleId;
+                  const articleData =
+                    dbArticles.find((a) => a.id === articleId) ||
+                    selectedArticles.find((a) => a.id === articleId);
+                  if (articleData) {
+                    showArticleDetail(articleData);
+                  }
+                });
+              });
+          }
+        }
+
+        if (adminDeleteSelectedArticlesBtn) {
+          adminDeleteSelectedArticlesBtn.addEventListener("click", function () {
+            const viewContainerId = adminArticleListDisplayToggle.checked
+              ? "admin-article-list-card-view"
+              : "admin-article-list-table-view";
+            const viewContainer = document.getElementById(viewContainerId);
+            if (!viewContainer) return;
+
+            const checkboxesContainer = adminArticleListDisplayToggle.checked
+              ? viewContainer
+              : viewContainer.querySelector("tbody");
+            if (!checkboxesContainer) return;
+
+            const checkedCheckboxes = checkboxesContainer.querySelectorAll(
+              ".article-checkbox:checked"
+            );
+            if (checkedCheckboxes.length === 0) {
+              alert("削除する記事を選択してください。");
+              return;
+            }
+
+            if (
+              confirm(
+                `${checkedCheckboxes.length}件の記事を削除してもよろしいですか？`
+              )
+            ) {
+              const idsToDelete = [];
+              checkedCheckboxes.forEach((cb) => idsToDelete.push(cb.value));
+
+              dbArticles = dbArticles.filter(
+                (article) => !idsToDelete.includes(article.id)
+              );
+
+              setupDisplayToggle(
+                "admin-article-list-display-toggle",
+                "admin-article-list-card-view",
+                "admin-article-list-table-view",
+                renderGenericArticles,
+                dbArticles,
+                true
+              );
+              renderDbArticles();
+              renderSelectedArticles();
+            }
+          });
+        }
+
+        if (addToSelectedArticlesBtn) {
+          addToSelectedArticlesBtn.addEventListener("click", () =>
+            moveArticles(
+              dbArticles,
+              selectedArticles,
+              "admin-db-article-display-toggle",
+              "admin-db-article-card-view",
+              "admin-db-article-table-view"
+            )
+          );
+        }
+        if (removeFromSelectedArticlesBtn) {
+          removeFromSelectedArticlesBtn.addEventListener("click", () =>
+            moveArticles(
+              selectedArticles,
+              dbArticles,
+              "admin-selected-article-display-toggle",
+              "admin-selected-article-card-view",
+              "admin-selected-article-table-view"
+            )
+          );
+        }
+
+        function moveArticles(
+          sourceArray,
+          destinationArray,
+          sourceToggleId,
+          sourceCardViewId,
+          sourceTableViewId
+        ) {
+          const sourceToggle = document.getElementById(sourceToggleId);
+          const isSourceCardView = sourceToggle ? sourceToggle.checked : true;
+
+          const sourceViewContainer = document.getElementById(
+            isSourceCardView ? sourceCardViewId : sourceTableViewId
+          );
+          if (!sourceViewContainer) return;
+
+          const checkboxesContainer = isSourceCardView
+            ? sourceViewContainer
+            : sourceViewContainer.querySelector("tbody");
+          if (!checkboxesContainer) return;
+
+          const checkedCheckboxes = checkboxesContainer.querySelectorAll(
+            ".article-checkbox:checked"
+          );
+
+          const articlesToMoveIds = [];
+          checkedCheckboxes.forEach((checkbox) => {
+            articlesToMoveIds.push(checkbox.value);
+            checkbox.checked = false;
+          });
+
+          articlesToMoveIds.forEach((articleId) => {
+            const articleIndex = sourceArray.findIndex(
+              (a) => a.id === articleId
+            );
+            if (articleIndex > -1) {
+              const [articleToMove] = sourceArray.splice(articleIndex, 1);
+              if (
+                !destinationArray.find(
+                  (article) => article.id === articleToMove.id
+                )
+              ) {
+                destinationArray.push(articleToMove);
+              }
+            }
+          });
+
+          renderDbArticles();
+          renderSelectedArticles();
+          renderSelectedArticlesForTemplate();
+        }
+
+        function renderDbArticles() {
+          setupDisplayToggle(
+            "admin-db-article-display-toggle",
+            "admin-db-article-card-view",
+            "admin-db-article-table-view",
+            renderGenericArticles,
+            dbArticles
+          );
+        }
+        function renderSelectedArticles() {
+          setupDisplayToggle(
+            "admin-selected-article-display-toggle",
+            "admin-selected-article-card-view",
+            "admin-selected-article-table-view",
+            renderGenericArticles,
+            selectedArticles
+          );
+        }
+
+        function renderSelectedArticlesForTemplate() {
+          if (!templateSelectedArticlesList) return;
+          templateSelectedArticlesList.innerHTML = "";
+
+          selectedArticles.forEach((article) => {
+            const articleDiv = document.createElement("div");
+            articleDiv.className =
+              "p-4 border border-gray-600 rounded-lg admin-list-card";
+            articleDiv.innerHTML = `
+                    <h5 class="font-medium mb-2 text-lg text-sky-300">${
+                      article.title
+                    }</h5>
+                    <p class="text-xs text-gray-400 mb-1">${article.source} | ${
+              article.date
+            }</p>
+                    <p class="text-sm text-gray-300 mb-2 summary">${
+                      article.summary
+                    }</p>
+                    <div class="text-xs mb-3">
+                        ${article.labels
+                          .map(
+                            (label) =>
+                              `<span class="bg-gray-600 px-1.5 py-0.5 rounded-full mr-1">${label}</span>`
+                          )
+                          .join("")}
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label for="template-cat-${
+                              article.id
+                            }" class="block text-xs font-medium text-gray-400 mb-1">大カテゴリ</label>
+                            <select id="template-cat-${
+                              article.id
+                            }" class="form-select text-sm p-2">
+                                <option>選択してください</option>
+                                <option>技術動向</option>
+                                <option>市場分析</option>
+                                <option>企業戦略</option>
+                                <option>製品情報</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="template-subcat-${
+                              article.id
+                            }" class="block text-xs font-medium text-gray-400 mb-1">小カテゴリ</label>
+                            <select id="template-subcat-${
+                              article.id
+                            }" class="form-select text-sm p-2">
+                                <option>選択してください</option>
+                                <option>AIプロセッサ</option>
+                                <option>先端材料</option>
+                                <option>メモリ技術</option>
+                                <option>製造装置</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="mt-2 text-xs bg-purple-600 hover:bg-purple-700 text-white py-1 px-2 rounded-md transition-colors">LLM自動分類</button>
+                `;
+            templateSelectedArticlesList.appendChild(articleDiv);
+          });
+        }
+
+        function showArticleDetail(articleData) {
+          if (!articleDetailSection || !articleData) return;
+
+          if (articleDetailTitle)
+            articleDetailTitle.textContent = articleData.title;
+          if (articleDetailThumbnail)
+            articleDetailThumbnail.src =
+              articleData.thumbnailUrl ||
+              "https://placehold.co/600x360/374151/9ca3af?text=No+Image";
+          if (articleDetailMeta)
+            articleDetailMeta.textContent = `${articleData.date} [${articleData.source}]`;
+          if (articleDetailSummary)
+            articleDetailSummary.textContent = articleData.summary;
+          if (articleDetailFullText)
+            articleDetailFullText.innerHTML = `<p>${articleData.fullText.replace(
+              /\n/g,
+              "</p><p>"
+            )}</p>`;
+
+          if (articleDetailLabels) {
+            articleDetailLabels.innerHTML = "";
+            articleData.labels.forEach((label) => {
+              const labelSpan = document.createElement("span");
+              labelSpan.className =
+                "text-xs bg-sky-600 text-sky-100 px-2 py-0.5 rounded-full";
+              labelSpan.textContent = label;
+              articleDetailLabels.appendChild(labelSpan);
+            });
+          }
+          if (articleDetailSourceLink)
+            articleDetailSourceLink.href = articleData.articleUrl || "#";
+
+          showSection("article-detail-section");
+        }
+
+        if (backToAdminArticleListBtn) {
+          backToAdminArticleListBtn.addEventListener("click", () => {
+            showSection("admin-topics-management-section");
+            const articleListMainTab = document.querySelector(
+              '.admin-main-tab[data-tab-target="admin-topics-list-tab"]'
+            );
+            if (articleListMainTab) switchAdminMainTab(articleListMainTab);
+          });
+        }
+
+        const videoElement = document.getElementById("background-video");
+        if (videoElement) {
+          videoElement.onerror = function () {
+            console.error("動画の読み込みに失敗しました。");
+            const videoContainer = document.getElementById(
+              "video-background-container"
+            );
+            if (videoContainer) {
+              videoContainer.style.backgroundImage =
+                "url('https://placehold.co/1920x1080/1a202c/FFFFFF?text=Video+Error')";
+              videoContainer.innerHTML = "";
+            }
+          };
+        }
+      });
+    </script>
+  </body>
+</html>
