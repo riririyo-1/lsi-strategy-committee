@@ -33,7 +33,13 @@
     "filter": "Filter",
     "sort": "Sort",
     "category": "Category",
-    "search": "Search"
+    "search": "Search",
+    "backToList": "Back to Trend Research List",
+    "speakerLabel": "Speaker",
+    "departmentLabel": "Department",
+    "materials": "Materials",
+    "agenda": "Agenda",
+    "downloadPdf": "Download presentation material for {title}"
   },
   "languageSwitcher": {
     "language": "Language",

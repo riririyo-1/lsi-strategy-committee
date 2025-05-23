@@ -33,7 +33,13 @@
     "filter": "フィルター",
     "sort": "並び替え",
     "category": "カテゴリー",
-    "search": "検索"
+    "search": "検索",
+    "backToList": "動向調査一覧へ戻る",
+    "speakerLabel": "講演者",
+    "departmentLabel": "部署",
+    "materials": "資料",
+    "agenda": "アジェンダ",
+    "downloadPdf": "講演資料をダウンロード"
   },
   "languageSwitcher": {
     "language": "言語",

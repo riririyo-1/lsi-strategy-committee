@@ -9,4 +9,5 @@ export interface TrendReport {
   speaker?: string;
   department?: string;
   agenda?: string[];
+  content?: string;
 }

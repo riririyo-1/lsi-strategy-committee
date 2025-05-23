@@ -17,7 +17,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="top-bar fixed top-0 left-0 w-full z-10 bg-navbar text-navbartext backdrop-blur-md -webkit-backdrop-filter:blur(10px) p-3 sm:p-6 shadow-lg border-b border-gray-200 dark:border-gray-800">
+    <nav className="top-bar fixed top-0 left-0 w-full z-10 bg-white/70 dark:bg-[#23272f]/70 text-navbartext backdrop-blur-md p-3 sm:p-6 shadow-lg border-b border-gray-200 dark:border-gray-800">
       <div className="container mx-auto flex items-center justify-between">
         <Link href="/" legacyBehavior>
           <a className="nav-link nav-logo text-navbartext text-xl md:text-2xl font-bold hover:text-link dark:hover:text-linkhover transition-colors">
