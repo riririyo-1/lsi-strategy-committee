@@ -21,7 +21,7 @@ const Navbar = () => {
       <div className="container mx-auto flex items-center justify-between">
         <Link href="/" legacyBehavior>
           <a className="nav-link nav-logo text-navbartext text-xl md:text-2xl font-bold hover:text-link dark:hover:text-linkhover transition-colors">
-            LSI戦略コミッティ
+            <span className="hidden md:inline">{t("common.siteTitle")}</span>
           </a>
         </Link>
         <div className="hidden md:flex space-x-1 lg:space-x-2 items-center">
