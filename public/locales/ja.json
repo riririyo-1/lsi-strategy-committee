@@ -45,5 +45,36 @@
     "language": "言語",
     "ja": "日本語",
     "en": "英語"
+  },
+  "contact": {
+    "heading": "お問い合わせ・アクセス権申請",
+    "description": "ご質問や資料請求、アクセス権申請などございましたら、以下のフォームからお問い合わせください。",
+    "title": "お問い合わせフォーム",
+    "name": "お名前",
+    "email": "メールアドレス",
+    "company": "ご所属（会社）",
+    "type": "お問い合わせ種別",
+    "content": "内容・申請理由",
+    "submit": "送信する",
+    "submitting": "送信中...",
+    "types": {
+      "inquiry": "一般のお問い合わせ",
+      "accessRequest": "アクセス権申請",
+      "other": "その他"
+    },
+    "success": {
+      "title": "送信完了",
+      "message": "お問い合わせを受け付けました。折り返しご連絡いたします。",
+      "newInquiry": "新しい問い合わせを作成"
+    },
+    "error": {
+      "title": "エラー",
+      "message": "送信に失敗しました。後でもう一度お試しください。"
+    },
+    "validation": {
+      "required": "{field}は必須です",
+      "email": "有効なメールアドレスを入力してください",
+      "minLength": "{field}は{min}文字以上入力してください"
+    }
   }
 }

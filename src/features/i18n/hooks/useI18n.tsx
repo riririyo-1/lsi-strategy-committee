@@ -154,10 +154,10 @@ export const I18nProvider: React.FC<I18nProviderProps> = ({
   const t = (key: string, params?: Record<string, string>): string => {
     if (!translations) return key;
     const keys = key.split(".");
-    let value: any = translations;
+    let value: Record<string, unknown> = translations;
     for (const k of keys) {
       if (value && typeof value === "object" && k in value) {
-        value = value[k];
+        value = value[k] as Record<string, unknown>;
       } else {
         return key;
       }

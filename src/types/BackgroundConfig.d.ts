@@ -24,7 +24,7 @@ export interface VideoBackgroundConfig extends BaseBackgroundConfig {
 export interface ThreeJSBackgroundConfig extends BaseBackgroundConfig {
   type: "threejs";
   sceneId: string;
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
 }
 
 export interface ColorBackgroundConfig extends BaseBackgroundConfig {
