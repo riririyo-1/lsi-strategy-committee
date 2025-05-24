@@ -8,6 +8,10 @@
     "type": "image",
     "src": "/images/research.png"
   },
+  "topics": {
+    "type": "image",
+    "src": "/images/topics.png"
+  },
   "default": {
     "type": "color",
     "value": "#18181b"
