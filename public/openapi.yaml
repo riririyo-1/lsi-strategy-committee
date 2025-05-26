@@ -16,7 +16,9 @@ tags:
   - name: Batch
     description: 要約・収集のバッチAPI
   - name: Topics
-    description: TOPICS配信関連API
+    description: TOPICS配信管理API
+  - name: TrendReports
+    description: 動向調査レポート管理API
 
 paths:
   /api/health:
@@ -112,3 +114,145 @@ paths:
       tags: [Topics]
       summary: 月次まとめ自動生成
       description: 月次まとめを自動生成
+
+  /api/trend-reports:
+    get:
+      tags: [TrendReports]
+      summary: 動向調査レポート一覧取得
+      description: 動向調査レポートのリストを取得する
+      responses:
+        "200":
+          description: レポート一覧
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrendReportListResponse"
+    post:
+      tags: [TrendReports]
+      summary: 新規動向調査レポート作成
+      description: 新しい動向調査レポートを作成する
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrendReport"
+      responses:
+        "201":
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrendReport"
+
+  /api/trend-reports/{id}:
+    get:
+      tags: [TrendReports]
+      summary: 動向調査レポート詳細取得
+      description: 指定IDの動向調査レポートを取得する
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: レポート詳細
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrendReport"
+        "404":
+          description: レポートが見つからない
+    put:
+      tags: [TrendReports]
+      summary: 動向調査レポート更新
+      description: 指定IDの動向調査レポートを更新する
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrendReport"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrendReport"
+        "404":
+          description: レポートが見つからない
+    delete:
+      tags: [TrendReports]
+      summary: 動向調査レポート削除
+      description: 指定IDの動向調査レポートを削除する
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: 削除成功
+        "404":
+          description: レポートが見つからない
+components:
+  schemas:
+    TrendReport:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        summary:
+          type: string
+        publishDate:
+          type: string
+          format: date
+        videoUrl:
+          type: string
+        posterUrl:
+          type: string
+        pdfUrl:
+          type: string
+        speaker:
+          type: string
+        department:
+          type: string
+        agenda:
+          type: array
+          items:
+            type: string
+        content:
+          type: string
+        lastUpdated:
+          type: string
+        viewCount:
+          type: integer
+        tags:
+          type: array
+          items:
+            type: string
+    TrendReportListResponse:
+      type: object
+      properties:
+        reports:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrendReport"
+        total:
+          type: integer
+        page:
+          type: integer
+        pageSize:
+          type: integer

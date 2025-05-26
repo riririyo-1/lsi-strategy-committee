@@ -1,138 +1,165 @@
-管理者 - TOPICS 配信記事収集ページ実装 README
-概要
-RSS フィードからの自動収集と手動追加により記事を収集し、LLM による要約・ラベル付けを行う管理画面です。
-ファイル構成
-frontend/
-├── app/
-│ └── admin/
-│ └── topics/
-│ └── collect/
-│ └── page.tsx # 記事収集ページ
-├── features/
-│ └── admin/
-│ └── topics/
-│ └── collect/
-│ ├── index.ts
-│ ├── components/
-│ │ ├── ArticleCollection.tsx # メインコンポーネント
-│ │ ├── RSSCollector.tsx # RSS 収集タブ
-│ │ ├── ManualCollector.tsx # 手動追加タブ
-│ │ ├── CollectionResults.tsx # 収集結果表示
-│ │ ├── ArticlePreview.tsx # 記事プレビュー
-│ │ └── LLMProcessModal.tsx # LLM 処理モーダル
-│ ├── hooks/
-│ │ ├── useRSSCollection.ts # RSS 収集フック
-│ │ ├── useArticleSummarize.ts # 要約処理フック
-│ │ └── useCollectionHistory.ts # 収集履歴
-│ └── use-cases/
-│ ├── CollectArticlesFromRSSUseCase.ts
-│ ├── AddManualArticleUseCase.ts
-│ └── SummarizeArticlesUseCase.ts
-├── types/
-│ └── articleCollection.d.ts # 収集関連型定義
-└── libs/
-└── api/
-└── collectionApi.ts # 収集 API
-実装詳細
+## サイトマップ
 
-1. 型定義 (types/articleCollection.d.ts)
-   typescriptexport interface RSSSource {
-   id: string;
-   name: string;
-   url: string;
-   category: string;
-   isActive: boolean;
-   }
+└─ TOPICS 配信 管理 (管理者ページ内)
+├─ タイトル
+│ └─ 「管理者ページへ戻る」ボタン
+├─ メインタブ
+│ ├─ 1. 記事収集
+│ │ ├─ RSS 収集（サブタブ）
+│ │ │ ├─ 開始日／終了日入力
+│ │ │ ├─ ソース選択チェックボックス（ITmedia, マイナビ, NHK）
+│ │ │ ├─ 「収集開始」ボタン
+│ │ │ ├─ 収集結果テーブル
+│ │ │ └─ 「LLM で要約・ラベル付け」ボタン
+│ │ └─ 手動追加（サブタブ）
+│ │ ├─ タイトル／URL／公開日／出典入力
+│ │ ├─ 「記事追加」ボタン
+│ │ ├─ 追加済み記事一覧テーブル
+│ │ └─ 「LLM で要約・ラベル付け」ボタン
+│ ├─ 2. 記事一覧
+│ │ ├─ 検索フィールド
+│ │ ├─ 表示切替スイッチ（カード／表形式）
+│ │ ├─ 記事カードビュー（サムネイル画像、チェックボックス、タイトル、出典|公開日、要約、ラベル、元記事リンクボタン）
+│ │ └ 記事詳細画面（タイトル、記事一覧へ戻るボタン、サムネイル画像、公開日 [出典]、要約、ラベル、本文、元記事リンクボタン）
+│ │ ├─ 記事テーブルビュー（チェックボックス、タイトル、出典、公開日、要約、ラベル、元記事リンクボタン）：表の列幅調整可能、列ソート可能
+│ │ └ 記事詳細画面（タイトル、記事一覧へ戻るボタン、サムネイル画像、公開日 [出典]、要約、ラベル、本文、元記事リンクボタン）
+│ │ ├─ ページネーション
+│ │ └─ 削除ボタン
+│ └─ 3. TOPICS 作成・編集
+│ ├─ 作成済み TOPICS 一覧（view①）
+│ │ ├─ 新規作成ボタン
+│ │ ├─ 検索フィールド
+│ │ └─ TOPICS カード一覧（TOPICS タイトル、サマリ、記事数、作成日、更新日）
+│ └─ TOPICS エディタ（view②）
+│ ├─ TOPICS タイトル入力
+│ ├─ 戻るボタン、保存ボタン
+│ ├─ サブタブ
+│ │ ├─ A. TOPICS 選択
+│ │ │ ├─ 記事 DB 表示（画面左半分、検索欄、カード／表切替、日付絞込、ラベル絞込一覧）
+│ │ │ │ └─ 記事選択／解除クリック可能、矢印で選択した記事を右に移動
+│ │ │ └─ 選択済み記事の一覧パネル（画面右半分、検索欄、カード／表切替）
+│ │ ├─ B. テンプレート出力
+│ │ │ ├─ サマリ入力欄＋ LLM 自動サマリ生成（500 字程度）
+│ │ │ └─ 選択記事の一覧＋大・小カテゴリプルダウン＋ LLM 自動カテゴリ選択
+│ │ └─ 「プレビュー表示」ボタン
+│ │ └─ C. プレビュー表示
+│ │ ├─ プレビュー表示領域（タイトル、配信日[カレンダ選択可能]、サマリ、記事一覧（大カテゴリごとにひとまとめ、[記事タイトル、出典|日付、小カテゴリ、ラベル、要約]））
+│ │ └─ HTML 表示／ダウンロードボタン
+└─ フッター（共通）
 
-export interface CollectionConfig {
-startDate: string;
-endDate: string;
-sources: string[];
-keywords?: string[];
-}
+---
 
-export interface CollectedArticle {
-id: string;
-title: string;
-source: string;
-sourceUrl: string;
-publishedAt: string;
-originalUrl: string;
-content: string;
-status: 'collected' | 'summarized' | 'error';
-summary?: string;
-labels?: string[];
-thumbnailUrl?: string;
-error?: string;
-}
+## UI 設計・画面構成案
 
-export interface CollectionResult {
-sessionId: string;
-totalArticles: number;
-successCount: number;
-errorCount: number;
-articles: CollectedArticle[];
-startedAt: string;
-completedAt?: string;
-}
+### 1. 全体構成（タブ構造）
 
-export interface LLMProcessingConfig {
-model: 'gpt-4' | 'gpt-3.5-turbo' | 'claude-3';
-temperature: number;
-maxTokens: number;
-customPrompt?: string;
-} 2. メインコンポーネント
-typescript// features/admin/topics/collect/components/ArticleCollection.tsx
-'use client';
+- **タイトルバー**
 
-import { useState } from 'react';
-import { RSSCollector } from './RSSCollector';
-import { ManualCollector } from './ManualCollector';
-import { CollectionResults } from './CollectionResults';
-import { TabNavigation } from '@/components/ui/TabNavigation';
+  - 「TOPICS 配信 管理」
+  - 「管理者ページへ戻る」ボタン
 
-export function ArticleCollection() {
-const [activeTab, setActiveTab] = useState<'rss' | 'manual'>('rss');
-const [currentSession, setCurrentSession] = useState<CollectionResult | null>(null);
+- **メインタブ**
+  1. 記事収集
+     - RSS 収集（サブタブ）
+     - 手動追加（サブタブ）
+  2. 記事一覧
+     - 検索・表示切替・詳細・削除・ページネーション
+  3. TOPICS 作成・編集
+     - 一覧・エディタ・記事選択・テンプレート出力・プレビュー
 
-const tabs = [
-{ id: 'rss', label: 'RSS 収集', icon: 'Rss' },
-{ id: 'manual', label: '手動追加', icon: 'Plus' },
-];
+### 2. 画面・コンポーネント設計
 
-return (
-<div className="min-h-screen bg-gray-900 py-8 px-4">
-<div className="max-w-7xl mx-auto">
-<div className="admin-content-card p-6">
-<h1 className="text-2xl md:text-3xl font-bold text-white mb-6">
-TOPICS 配信 - 記事収集
-</h1>
+#### 1. 記事収集タブ
 
-          <TabNavigation
-            tabs={tabs}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
+- **サブタブ: RSS 収集**
 
-          <div className="mt-6">
-            {activeTab === 'rss' ? (
-              <RSSCollector onCollectionComplete={setCurrentSession} />
-            ) : (
-              <ManualCollector onArticleAdded={setCurrentSession} />
-            )}
-          </div>
+  - 期間指定（開始日・終了日）
+  - ソース選択（チェックボックス: ITmedia, マイナビ, NHK）
+  - 「収集開始」ボタン
+  - 収集結果テーブル（タイトル、出典、日付、要約、ラベル…）
+  - 「LLM で要約・ラベル付け」ボタン
 
-          {currentSession && (
-            <div className="mt-8">
-              <CollectionResults
-                session={currentSession}
-                onUpdate={setCurrentSession}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+- **サブタブ: 手動追加**
+  - 入力フォーム（タイトル、URL、公開日、出典）
+  - 「記事追加」ボタン
+  - 追加済み記事一覧テーブル
+  - 「LLM で要約・ラベル付け」ボタン
 
-);
-} 3. RSS 収集コンポーネント
+#### 2. 記事一覧タブ
+
+- 検索フィールド
+- 表示切替（カード／表形式）
+- **カードビュー**
+  - サムネイル画像
+  - チェックボックス
+  - タイトル
+  - 出典|公開日
+  - 要約
+  - ラベル
+  - 元記事リンクボタン
+- **テーブルビュー**
+  - チェックボックス
+  - タイトル
+  - 出典
+  - 公開日
+  - 要約
+  - ラベル
+  - 元記事リンクボタン
+  - 列幅調整・列ソート
+- 記事詳細画面（共通）
+  - タイトル
+  - 戻るボタン
+  - サムネイル画像
+  - 公開日 [出典]
+  - 要約
+  - ラベル
+  - 本文
+  - 元記事リンクボタン
+- ページネーション
+- 削除ボタン
+
+#### 3. TOPICS 作成・編集タブ
+
+- **一覧ビュー**
+
+  - TOPICS カード一覧（タイトル、サマリ、記事数、作成日、更新日）
+  - 新規作成ボタン
+  - 検索フィールド
+
+- **エディタビュー**
+  - TOPICS タイトル入力
+  - 戻る・保存ボタン
+  - サブタブ
+    - **A. TOPICS 選択**
+      - 記事 DB 表示（左: 検索・カード/表切替・日付/ラベル絞込）
+      - 記事選択/解除、矢印で右パネルへ移動
+      - 右: 選択済み記事一覧
+    - **B. テンプレート出力**
+      - サマリ入力欄＋ LLM 自動生成
+      - 選択記事一覧＋大・小カテゴリプルダウン＋ LLM 自動カテゴリ選択
+      - 「プレビュー表示」ボタン
+    - **C. プレビュー表示**
+      - プレビュー領域（タイトル、配信日、サマリ、記事一覧（大カテゴリごと））
+      - HTML 表示／ダウンロードボタン
+
+### 3. 画面遷移イメージ
+
+- 管理 TOPICS 配信画面（タブ切替）
+  - 記事収集（RSS/手動）→ 記事一覧（詳細/削除）→ TOPICS 作成・編集（一覧 → エディタ → プレビュー）
+
+### 4. 想定コンポーネント例（`src/features/admin/topics/components/`）
+
+- `TopicsAdminTabs.tsx`（タブ切替 UI）
+- `ArticleCollector.tsx`（記事収集: RSS/手動）
+- `ArticleList.tsx`（記事一覧: カード/テーブル/詳細/削除）
+- `TopicsList.tsx`（TOPICS 一覧カード）
+- `TopicsEditor.tsx`（TOPICS エディタ: 記事選択/テンプレート/プレビュー）
+- `ArticleCard.tsx` / `ArticleTableRow.tsx` / `ArticleDetail.tsx`
+- `TopicsPreview.tsx`（HTML プレビュー）
+
+### 5. クリーンアーキテクチャ対応
+
+- UI 層: `components/`
+- 状態管理・ロジック: `hooks/`, `use-cases/`
+- API 通信: `libs/api/`
+- 型: `types/`
