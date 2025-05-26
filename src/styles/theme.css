@@ -1,9 +1,9 @@
 :root {
-  --color-background: #ffffff;
+  --color-background: #f3f4f6; /* gray-100: グレー寄りの明るい色 */
   --color-foreground: #222222;
   --color-navbar: #f8fafc;
   --color-navbar-text: #222222;
-  --color-footer: #f1f5f9;
+  --color-footer: #e5e7eb; /* gray-200 */
   --color-link: #2563eb;
   --color-link-hover: #1d4ed8;
 }

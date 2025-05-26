@@ -1,7 +1,8 @@
 {
   "common": {
     "siteTitle": "LSI Strategy Committee",
-    "siteDescription": "Latest LSI technology trends, analysis, and TOPICS delivery"
+    "siteDescription": "Latest LSI technology trends, analysis, and TOPICS delivery",
+    "delimiter": ", "
   },
   "nav": {
     "home": "Home",
@@ -52,7 +53,9 @@
     "search": "Search",
     "backToList": "Back to TOPICS List",
     "articleCount": "Articles: {count}",
-    "readThisMonth": "Read This Issue"
+    "readThisMonth": "Read This Issue",
+    "categoryLabel": "Category:",
+    "articleUnit": " articles"
   },
   "languageSwitcher": {
     "language": "Language",
@@ -89,5 +92,13 @@
       "email": "Please enter a valid email address",
       "minLength": "{field} must be at least {min} characters long"
     }
+  },
+  "adminDashboard": {
+    "title": "Admin Dashboard",
+    "swagger": "API Documentation (Swagger)",
+    "researchTitle": "Research Report Management",
+    "researchDesc": "Create, edit, delete, and publish research reports",
+    "topicsTitle": "TOPICS Management",
+    "topicsDesc": "RSS auto-collection, manual addition, summarization, labeling, list management, TOPICS list, selection, template export, category selection, summary input, preview, and email delivery"
   }
 }

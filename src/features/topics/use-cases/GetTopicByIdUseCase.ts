@@ -3,7 +3,7 @@ import type { Topic } from "@/types/topic";
 // 仮のダミーデータ（useTopics.tsと同じ構造）
 const dummyTopics: Topic[] = [
   {
-    id: "topics-202505",
+    id: "topic-001",
     title: "2025年5月号 TOPICS",
     publishDate: "2025-05-01",
     summary:

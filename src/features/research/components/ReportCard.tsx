@@ -11,11 +11,13 @@ interface ReportCardProps {
 const ReportCard: React.FC<ReportCardProps> = ({ report }) => {
   const { t } = useI18n();
   return (
-    <div className="report-card w-full p-4 flex flex-col gap-2 bg-gray-800 bg-opacity-75 border border-gray-700 rounded-lg shadow-lg hover:bg-gray-700 transition-all duration-300">
-      <h2 className="text-2xl font-semibold mb-3 text-blue-300 text-shadow-sm">
+    <div className="report-card w-full p-4 flex flex-col gap-2 bg-sky-50/60 dark:bg-gray-800/80 border border-sky-100 dark:border-gray-700 rounded-lg shadow-lg hover:bg-sky-100/60 dark:hover:bg-gray-700/80 transition-all duration-300 text-gray-900 dark:text-gray-100">
+      <h2 className="text-2xl font-bold mb-3 text-blue-700 dark:text-blue-300 text-shadow-sm">
         {report.title}
       </h2>
-      <p className="text-gray-300 mb-4 flex-grow text-sm">{report.summary}</p>
+      <p className="text-gray-700 dark:text-gray-300 mb-4 flex-grow text-sm">
+        {report.summary}
+      </p>
       <p className="text-xs text-gray-400 mb-4">
         {t("research.publishDate", { date: report.publishDate })}
       </p>

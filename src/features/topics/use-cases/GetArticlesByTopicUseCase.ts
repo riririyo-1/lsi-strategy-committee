@@ -47,10 +47,10 @@ export async function getDummyArticlesByTopicAndCategory(
 ): Promise<Article[]> {
   // topicsのダミーデータと連携する場合は、GetTopicByIdUseCaseからimportして参照してもよい
   // 今回はa1,a2,a3のみ
-  if (topicId === "topics-202505" && categoryId === "cat-1") {
+  if (topicId === "topic-001" && categoryId === "cat-1") {
     return dummyArticles.filter((a) => a.id === "a1" || a.id === "a2");
   }
-  if (topicId === "topics-202505" && categoryId === "cat-2") {
+  if (topicId === "topic-001" && categoryId === "cat-2") {
     return dummyArticles.filter((a) => a.id === "a3");
   }
   return [];

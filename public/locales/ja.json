@@ -1,7 +1,8 @@
 {
   "common": {
     "siteTitle": "LSI戦略コミッティ",
-    "siteDescription": "最新のLSI技術動向、分析、TOPICS配信"
+    "siteDescription": "最新のLSI技術動向、分析、TOPICS配信",
+    "delimiter": "、"
   },
   "nav": {
     "home": "ホーム",
@@ -52,7 +53,9 @@
     "search": "検索",
     "backToList": "TOPICS一覧へ戻る",
     "articleCount": "記事数: {count}件",
-    "readThisMonth": "今月号を読む"
+    "readThisMonth": "今月号を読む",
+    "categoryLabel": "カテゴリ:",
+    "articleUnit": "件"
   },
   "languageSwitcher": {
     "language": "言語",
@@ -89,5 +92,13 @@
       "email": "有効なメールアドレスを入力してください",
       "minLength": "{field}は{min}文字以上入力してください"
     }
+  },
+  "adminDashboard": {
+    "title": "管理者ダッシュボード",
+    "swagger": "APIドキュメント（Swagger）",
+    "researchTitle": "動向調査レポート管理",
+    "researchDesc": "レポートの作成・編集・削除・公開設定",
+    "topicsTitle": "TOPICS配信管理",
+    "topicsDesc": "RSS自動収集・手動追加・要約・ラベル付け・一覧管理・TOPICS一覧・TOPICS選択・テンプレート出力・カテゴリ選択・サマリ入力・プレビュー出力・メール配信"
   }
 }

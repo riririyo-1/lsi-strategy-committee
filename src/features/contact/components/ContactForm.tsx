@@ -30,9 +30,9 @@ export const ContactForm: React.FC = () => {
 
       <form
         onSubmit={handleSubmit}
-        className="bg-slate-800 p-6 rounded-lg shadow-md"
+        className="bg-white/80 dark:bg-slate-800/90 p-6 rounded-lg shadow-md text-gray-900 dark:text-gray-100"
       >
-        <h2 className="text-2xl text-white mb-6">
+        <h2 className="text-2xl text-gray-900 dark:text-white mb-6">
           {t("contact.title") || "お問い合わせ・アクセス権申請"}
         </h2>
 

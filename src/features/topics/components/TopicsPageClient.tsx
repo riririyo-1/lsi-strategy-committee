@@ -8,67 +8,27 @@ import { TopicCard } from "./TopicCard";
 const dummyTopics: Topic[] = [
   {
     id: "topic-001",
-    title: "次世代半導体材料の動向 2025",
-    summary: "SiCやGaNなど次世代材料の最新動向と市場予測を解説。",
-    publishDate: "2025-05-15",
-    articleCount: 12,
+    title: "2025年5月号 TOPICS",
+    publishDate: "2025-05-01",
+    summary:
+      "今月の半導体業界は、特に量子コンピューティング向けLSIの最新開発状況やEUVリソグラフィ技術の進展が注目されました。また、サステナブルな半導体製造への取り組みも加速しています。",
+    articleCount: 3,
     categories: [
       {
         id: "cat-1",
-        name: "材料",
+        name: "技術動向",
         displayOrder: 1,
-        articles: [{ id: "a1" }],
+        articles: [{ id: "a1" }, { id: "a2" }],
       },
       {
         id: "cat-2",
-        name: "市場",
+        name: "市場トレンド",
         displayOrder: 2,
-        articles: [{ id: "a2" }],
-      },
-    ],
-    createdAt: "2025-05-01",
-    updatedAt: "2025-05-10",
-  },
-  {
-    id: "topic-002",
-    title: "AIチップ市場の競争環境分析",
-    summary:
-      "主要プレイヤーの戦略と新興企業の動向、今後の市場シェア変動を予測。",
-    publishDate: "2025-04-28",
-    articleCount: 8,
-    categories: [
-      {
-        id: "cat-3",
-        name: "AI",
-        displayOrder: 1,
         articles: [{ id: "a3" }],
       },
-      {
-        id: "cat-4",
-        name: "チップ",
-        displayOrder: 2,
-        articles: [{ id: "a4" }],
-      },
     ],
-    createdAt: "2025-04-01",
-    updatedAt: "2025-04-10",
-  },
-  {
-    id: "topic-003",
-    title: "チップレット技術の最新トレンドと将来展望",
-    summary: "チップレット技術の採用状況、標準化動向、今後の技術的課題を考察。",
-    publishDate: "2025-03-10",
-    articleCount: 5,
-    categories: [
-      {
-        id: "cat-5",
-        name: "チップレット",
-        displayOrder: 1,
-        articles: [{ id: "a5" }],
-      },
-    ],
-    createdAt: "2025-03-01",
-    updatedAt: "2025-03-10",
+    createdAt: "2025-05-01T00:00:00Z",
+    updatedAt: "2025-05-01T00:00:00Z",
   },
 ];
 
