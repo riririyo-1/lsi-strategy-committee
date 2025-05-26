@@ -12,7 +12,7 @@ const ResearchReportDetailClient: React.FC<ResearchReportDetailClientProps> = ({
 }) => {
   const { t } = useI18n();
   return (
-    <div className="max-w-5xl mx-auto py-10 px-4 text-foreground">
+    <div className="max-w-5xl mx-auto py-10 px-4 text-foreground mt-24">
       {/* タイトル・戻るボタン */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
         <h1 className="text-3xl md:text-4xl font-bold text-link dark:text-linkhover text-shadow">

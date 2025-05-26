@@ -25,7 +25,7 @@ export function TopicsFeature() {
   }
 
   return (
-    <PageWithBackground className="min-h-screen">
+    <PageWithBackground>
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl md:text-5xl font-bold mb-10 text-center text-white">
           半導体TOPICS配信

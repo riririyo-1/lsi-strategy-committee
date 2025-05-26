@@ -41,6 +41,17 @@
     "agenda": "Agenda",
     "downloadPdf": "Download presentation material for {title}"
   },
+  "topics": {
+    "title": "TOPICS",
+    "description": "We deliver the latest topics on LSI technology",
+    "readMore": "Read More",
+    "publishDate": "Publish Date: {date}",
+    "filter": "Filter",
+    "sort": "Sort",
+    "category": "Category",
+    "search": "Search",
+    "backToList": "Back to TOPICS List"
+  },
   "languageSwitcher": {
     "language": "Language",
     "ja": "Japanese",

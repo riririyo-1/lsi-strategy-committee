@@ -1,8 +1,8 @@
 "use client";
 
+import { useI18n } from "@/features/i18n/hooks/useI18n";
 import { TrendReport } from "@/types/trendReport";
 import ReportCard from "./ReportCard";
-import { useI18n } from "@/features/i18n/hooks/useI18n";
 
 // ダミーデータ（後でAPIから取得するように変更）
 const dummyTrendReports: TrendReport[] = [

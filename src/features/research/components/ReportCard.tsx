@@ -11,7 +11,7 @@ interface ReportCardProps {
 const ReportCard: React.FC<ReportCardProps> = ({ report }) => {
   const { t } = useI18n();
   return (
-    <div className="report-card p-6 flex flex-col bg-gray-800 bg-opacity-75 border border-gray-700 rounded-lg shadow-lg hover:bg-gray-700 transition-all duration-300">
+    <div className="report-card w-full p-4 flex flex-col gap-2 bg-gray-800 bg-opacity-75 border border-gray-700 rounded-lg shadow-lg hover:bg-gray-700 transition-all duration-300">
       <h2 className="text-2xl font-semibold mb-3 text-blue-300 text-shadow-sm">
         {report.title}
       </h2>

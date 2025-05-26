@@ -41,6 +41,17 @@
     "agenda": "アジェンダ",
     "downloadPdf": "講演資料をダウンロード"
   },
+  "topics": {
+    "title": "TOPICS配信",
+    "description": "最新のLSI技術に関するトピックスを配信しています",
+    "readMore": "詳細を見る",
+    "publishDate": "公開日: {date}",
+    "filter": "フィルター",
+    "sort": "並び替え",
+    "category": "カテゴリー",
+    "search": "検索",
+    "backToList": "TOPICS一覧へ戻る"
+  },
   "languageSwitcher": {
     "language": "言語",
     "ja": "日本語",
