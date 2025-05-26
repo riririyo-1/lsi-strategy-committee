@@ -50,7 +50,9 @@
     "sort": "Sort",
     "category": "Category",
     "search": "Search",
-    "backToList": "Back to TOPICS List"
+    "backToList": "Back to TOPICS List",
+    "articleCount": "Articles: {count}",
+    "readThisMonth": "Read This Issue"
   },
   "languageSwitcher": {
     "language": "Language",

@@ -50,7 +50,9 @@
     "sort": "並び替え",
     "category": "カテゴリー",
     "search": "検索",
-    "backToList": "TOPICS一覧へ戻る"
+    "backToList": "TOPICS一覧へ戻る",
+    "articleCount": "記事数: {count}件",
+    "readThisMonth": "今月号を読む"
   },
   "languageSwitcher": {
     "language": "言語",

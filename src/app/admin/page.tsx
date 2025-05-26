@@ -20,7 +20,7 @@ export default function AdminDashboard() {
             </div>
           </Link>
           <Link
-            href="/admin/trend-reports"
+            href="/admin/research"
             className="block bg-green-800 hover:bg-green-700 text-white rounded-lg shadow p-8 transition"
           >
             <div className="text-xl font-semibold mb-2">
