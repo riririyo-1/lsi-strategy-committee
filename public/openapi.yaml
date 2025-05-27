@@ -115,6 +115,26 @@ paths:
       summary: 月次まとめ自動生成
       description: 月次まとめを自動生成
 
+  /api/categories:
+    get:
+      tags: [Articles]
+      summary: カテゴリ一覧取得
+      description: 記事・TOPICSで利用可能なカテゴリのリストを取得
+    post:
+      tags: [Articles]
+      summary: 新規カテゴリ作成
+      description: 新しいカテゴリを追加
+
+  /api/categories/{id}:
+    put:
+      tags: [Articles]
+      summary: カテゴリ編集
+      description: 指定IDのカテゴリ名などを編集
+    delete:
+      tags: [Articles]
+      summary: カテゴリ削除
+      description: 指定IDのカテゴリを削除
+
   /api/trend-reports:
     get:
       tags: [TrendReports]
@@ -205,6 +225,7 @@ paths:
           description: 削除成功
         "404":
           description: レポートが見つからない
+
 components:
   schemas:
     TrendReport:

@@ -33,7 +33,7 @@ const AdminDashboardClient = () => {
           </div>
         </Link>
         <Link
-          href="/admin/topics/collect"
+          href="/admin/topics"
           className="block bg-blue-800 hover:bg-blue-700 text-white rounded-lg shadow p-8 transition h-full"
         >
           <div className="text-xl font-semibold mb-2 text-center">

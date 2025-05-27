@@ -2,7 +2,10 @@
   "common": {
     "siteTitle": "LSI Strategy Committee",
     "siteDescription": "Latest LSI technology trends, analysis, and TOPICS delivery",
-    "delimiter": ", "
+    "delimiter": ", ",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "processing": "Processing..."
   },
   "nav": {
     "home": "Home",
@@ -100,5 +103,22 @@
     "researchDesc": "Create, edit, delete, and publish research reports",
     "topicsTitle": "TOPICS Management",
     "topicsDesc": "RSS auto-collection, manual addition, summarization, labeling, list management, TOPICS list, selection, template export, category selection, summary input, preview, and email delivery"
+  },
+  "admin": {
+    "topics": {
+      "management": "TOPICS Management",
+      "total": "Total: {count} TOPICS",
+      "create": "Create New TOPIC",
+      "edit": "Edit",
+      "collectArticles": "Collect Articles",
+      "delete": "Delete",
+      "searchPlaceholder": "Search by TOPICS title...",
+      "noResults": "No TOPICS found",
+      "error": "An error occurred",
+      "publishDate": "Publish Date: {date}",
+      "articleCount": "Articles: {count}",
+      "confirmDelete": "Delete this TOPIC?",
+      "confirmDeleteMessage": "This action cannot be undone. Are you sure you want to delete?"
+    }
   }
 }

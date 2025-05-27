@@ -1,46 +1,65 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useI18n } from "@/features/i18n/hooks/useI18n";
+import { Topic } from "@/types/topic.d";
 
-type Article = {
-  id: string;
-  title: string;
-  source: string;
-  publishedAt: string;
-  status: "collected" | "summarized" | "error";
-  summary?: string;
-  labels?: string[];
-};
-
-const dummyArticles: Article[] = [
+// ダミーデータ（後で実際のAPIから取得するように変更）
+const dummyTopics: Topic[] = [
   {
-    id: "a1",
-    title: "次世代半導体材料の動向 2025",
-    source: "Tech News",
-    publishedAt: "2025-05-20",
-    status: "summarized",
-    summary: "SiCやGaNなど次世代材料の最新動向を解説。",
-    labels: ["半導体", "材料", "SiC", "GaN"],
+    id: "topic-001",
+    title: "2025年5月号 TOPICS",
+    publishDate: "2025-05-01",
+    summary:
+      "今月の半導体業界は、特に量子コンピューティング向けLSIの最新開発状況やEUVリソグラフィ技術の進展が注目されました。また、サステナブルな半導体製造への取り組みも加速しています。",
+    articleCount: 3,
+    categories: [
+      {
+        id: "cat-1",
+        name: "技術動向",
+        displayOrder: 1,
+        articles: [{ id: "a1" }, { id: "a2" }],
+      },
+      {
+        id: "cat-2",
+        name: "市場トレンド",
+        displayOrder: 2,
+        articles: [{ id: "a3" }],
+      },
+    ],
+    createdAt: "2025-05-01T00:00:00Z",
+    updatedAt: "2025-05-01T00:00:00Z",
   },
   {
-    id: "a2",
-    title: "AIチップ市場の競争環境分析",
-    source: "AI Times",
-    publishedAt: "2025-04-15",
-    status: "collected",
-  },
-  {
-    id: "a3",
-    title: "チップレット技術の最新トレンド",
-    source: "Chiplet Journal",
-    publishedAt: "2025-03-10",
-    status: "error",
+    id: "topic-002",
+    title: "2025年4月号 TOPICS",
+    publishDate: "2025-04-01",
+    summary:
+      "車載半導体の需給バランスが大きく改善し、新世代のLSI設計プロセスにおける自動化・AI活用が加速しています。また、リケーブルな半導体サプライチェーンの構築に向けた国際的な動きも活発化しています。",
+    articleCount: 5,
+    categories: [
+      {
+        id: "cat-2",
+        name: "市場トレンド",
+        displayOrder: 1,
+        articles: [{ id: "b1" }, { id: "b2" }, { id: "b3" }],
+      },
+      {
+        id: "cat-3",
+        name: "企業動向",
+        displayOrder: 2,
+        articles: [{ id: "b4" }, { id: "b5" }],
+      },
+    ],
+    createdAt: "2025-04-01T00:00:00Z",
+    updatedAt: "2025-04-01T00:00:00Z",
   },
 ];
 
 export default function TopicsAdminPage() {
-  const [activeTab, setActiveTab] = useState<"rss" | "manual">("rss");
-  const [articles, setArticles] = useState(dummyArticles);
+  const { t } = useI18n();
+  const [topics, setTopics] = useState<Topic[]>(dummyTopics);
 
   return (
     <div className="min-h-screen bg-[#181e29] py-0 px-0">
@@ -48,95 +67,75 @@ export default function TopicsAdminPage() {
         <div className="w-full max-w-5xl">
           <div className="bg-[#232b39] rounded-2xl shadow p-8">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-100 mb-6">
-              TOPICS配信 記事管理
+              TOPICS配信管理
             </h1>
-            <div className="flex gap-2 mb-6">
-              <button
-                className={`px-4 py-2 rounded transition text-sm font-semibold ${
-                  activeTab === "rss"
-                    ? "bg-blue-700 text-white"
-                    : "bg-gray-700 text-gray-200"
-                }`}
-                onClick={() => setActiveTab("rss")}
-              >
-                RSS収集
-              </button>
-              <button
-                className={`px-4 py-2 rounded transition text-sm font-semibold ${
-                  activeTab === "manual"
-                    ? "bg-blue-700 text-white"
-                    : "bg-gray-700 text-gray-200"
-                }`}
-                onClick={() => setActiveTab("manual")}
-              >
-                手動追加
-              </button>
-              <button className="ml-auto bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 rounded transition text-sm">
-                新規記事作成
+            <div className="flex justify-between mb-6">
+              <div className="flex items-center">
+                <span className="text-gray-300">
+                  合計: {topics.length}件のTOPICS
+                </span>
+              </div>
+              <button className="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded transition text-sm flex items-center">
+                <span className="mr-1">+</span>新規TOPICS作成
               </button>
             </div>
             <div className="mb-6">
               <input
                 type="text"
                 className="w-full bg-[#2d3646] text-gray-200 rounded px-4 py-3 outline-none placeholder-gray-400"
-                placeholder="記事タイトルで検索..."
-                // 検索機能は省略
+                placeholder="TOPICSタイトルで検索..."
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {articles.map((article) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {topics.map((topic) => (
                 <div
-                  key={article.id}
+                  key={topic.id}
                   className="bg-[#2d3646] rounded-xl shadow p-6 flex flex-col"
                 >
                   <div className="text-lg font-semibold text-blue-200 mb-2 truncate">
-                    {article.title}
+                    {topic.title}
                   </div>
-                  <div className="text-sm text-gray-300 mb-1">
-                    ソース: {article.source}
+                  <div className="text-sm text-gray-300 mb-2 line-clamp-2">
+                    {topic.summary}
                   </div>
                   <div className="text-xs text-gray-400 mb-1">
-                    公開日: {article.publishedAt}
+                    公開日: {topic.publishDate}
                   </div>
                   <div className="text-xs text-gray-400 mb-2">
-                    ステータス:{" "}
-                    {article.status === "summarized"
-                      ? "要約済"
-                      : article.status === "collected"
-                      ? "収集済"
-                      : "エラー"}
+                    記事数: {topic.articleCount}件
                   </div>
-                  {article.summary && (
-                    <div className="text-xs text-gray-300 mb-2">
-                      要約: {article.summary}
-                    </div>
-                  )}
-                  {article.labels && (
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      {article.labels.map((label) => (
+                  {topic.categories && (
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {topic.categories.map((category) => (
                         <span
-                          key={label}
+                          key={category.id}
                           className="bg-blue-700 text-xs text-white px-2 py-0.5 rounded"
                         >
-                          {label}
+                          {category.name}({category.articles.length})
                         </span>
                       ))}
                     </div>
                   )}
                   <div className="flex gap-2 mt-auto">
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded transition text-sm">
+                    <Link
+                      href={`/admin/topics/${topic.id}`}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-sm"
+                    >
                       編集
-                    </button>
-                    <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded transition text-sm">
-                      削除
-                    </button>
+                    </Link>
+                    <Link
+                      href={`/admin/topics/${topic.id}/collect`}
+                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition text-sm"
+                    >
+                      記事収集
+                    </Link>
                   </div>
                 </div>
               ))}
             </div>
-            {articles.length === 0 && (
+            {topics.length === 0 && (
               <div className="text-center py-12 text-gray-400">
-                <p>記事が見つかりません</p>
+                <p>TOPICSが見つかりません</p>
               </div>
             )}
           </div>

@@ -2,7 +2,10 @@
   "common": {
     "siteTitle": "LSI戦略コミッティ",
     "siteDescription": "最新のLSI技術動向、分析、TOPICS配信",
-    "delimiter": "、"
+    "delimiter": "、",
+    "cancel": "キャンセル",
+    "delete": "削除する",
+    "processing": "処理中"
   },
   "nav": {
     "home": "ホーム",
@@ -100,5 +103,22 @@
     "researchDesc": "レポートの作成・編集・削除・公開設定",
     "topicsTitle": "TOPICS配信管理",
     "topicsDesc": "RSS自動収集・手動追加・要約・ラベル付け・一覧管理・TOPICS一覧・TOPICS選択・テンプレート出力・カテゴリ選択・サマリ入力・プレビュー出力・メール配信"
+  },
+  "admin": {
+    "topics": {
+      "management": "TOPICS配信管理",
+      "total": "合計: {count}件のTOPICS",
+      "create": "新規TOPICS作成",
+      "edit": "編集",
+      "collectArticles": "記事収集",
+      "delete": "削除",
+      "searchPlaceholder": "TOPICSタイトルで検索...",
+      "noResults": "TOPICSが見つかりません",
+      "error": "エラーが発生しました",
+      "publishDate": "公開日: {date}",
+      "articleCount": "記事数: {count}件",
+      "confirmDelete": "TOPICSを削除しますか？",
+      "confirmDeleteMessage": "この操作は取り消せません。本当に削除しますか？"
+    }
   }
 }
