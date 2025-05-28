@@ -12,7 +12,6 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
   const { t } = useI18n();
   return (
     <div className="max-w-4xl mx-auto bg-white/80 dark:bg-gray-900/90 rounded-xl p-8 mt-24 shadow-lg text-gray-900 dark:text-gray-100">
-      {/* 上部に戻るボタン */}
       <div className="mb-6 flex justify-end">
         <a
           href="/topics"
@@ -26,7 +25,6 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
         {t("topics.publishDate", { date: topic.publishDate })}
       </p>
       <p className="mb-6 text-gray-700 dark:text-gray-200">{topic.summary}</p>
-      {/* 下部の戻るボタンは削除 */}
       <h2 className="text-2xl font-semibold text-blue-200 mb-4">
         {t("topics.thisMonthArticles", { defaultValue: "今月の記事一覧" })}
       </h2>
