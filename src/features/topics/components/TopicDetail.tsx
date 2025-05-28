@@ -17,7 +17,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
           href="/topics"
           className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white px-4 py-2 rounded transition"
         >
-          {t("topics.backToList")}
+          {t("common.back")}
         </a>
       </div>
       <h1 className="text-4xl font-bold text-yellow-300 mb-2">{topic.title}</h1>
@@ -26,7 +26,7 @@ export const TopicDetail: React.FC<TopicDetailProps> = ({ topic }) => {
       </p>
       <p className="mb-6 text-gray-700 dark:text-gray-200">{topic.summary}</p>
       <h2 className="text-2xl font-semibold text-blue-200 mb-4">
-        {t("topics.thisMonthArticles", { defaultValue: "今月の記事一覧" })}
+        {t("topics.thisMonthArticles")}
       </h2>
       <div>
         {topic.categories.map((cat: TopicCategory) => (

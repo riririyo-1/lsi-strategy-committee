@@ -43,7 +43,7 @@ export function TopicCard({ topic }: TopicCardProps) {
         href={`/topics/${topic.id}`}
         className="mt-auto self-start bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 text-sm"
       >
-        {t("topics.readThisMonth")}
+        {t("common.details")}
       </Link>
     </div>
   );

@@ -2,14 +2,21 @@
 
 import { TrendReport } from "@/types/trendReport";
 import { useI18n } from "@/features/i18n/hooks/useI18n";
+import { useMemo } from "react";
 
 interface ResearchReportDetailClientProps {
-  report: TrendReport;
+  initialReport: string; // JSONシリアライズされたレポート
 }
 
 const ResearchReportDetailClient: React.FC<ResearchReportDetailClientProps> = ({
-  report,
+  initialReport,
 }) => {
+  // JSONからレポートをパース
+  const report = useMemo<TrendReport>(
+    () => JSON.parse(initialReport),
+    [initialReport]
+  );
+
   const { t } = useI18n();
   return (
     <div className="max-w-5xl mx-auto py-10 px-4 text-foreground mt-24">
@@ -22,9 +29,7 @@ const ResearchReportDetailClient: React.FC<ResearchReportDetailClientProps> = ({
           href="/research"
           className="text-sm bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-md transition-colors self-start md:self-center"
         >
-          {t("research.backToList") !== "research.backToList"
-            ? t("research.backToList")
-            : "動向調査一覧へ戻る"}
+          {t("common.back")}
         </a>
       </div>
 
@@ -99,7 +104,7 @@ const ResearchReportDetailClient: React.FC<ResearchReportDetailClientProps> = ({
                     clipRule="evenodd"
                   />
                 </svg>
-                {t("research.downloadPdf", { title: report.title })}
+                {t("common.download")}
               </a>
             )}
           </div>
@@ -109,13 +114,17 @@ const ResearchReportDetailClient: React.FC<ResearchReportDetailClientProps> = ({
       {/* 公開日・要約 */}
       <div className="mt-8">
         <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-          {t("research.publishDate", { date: report.publishDate })}
+          {t("research.publishDate", {
+            date:
+              report.publishDate?.substring(0, 10) ||
+              t("common.notSet", "未設定"),
+          })}
         </p>
         <p className="mb-6 text-lg">{report.summary}</p>
       </div>
 
       {/* アジェンダ */}
-      {report.agenda && report.agenda.length > 0 && (
+      {Array.isArray(report.agenda) && report.agenda.length > 0 && (
         <div className="mt-8">
           <h2 className="text-2xl font-semibold text-sky-300 mb-3">
             {t("research.agenda")}

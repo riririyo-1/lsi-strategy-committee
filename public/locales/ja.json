@@ -4,8 +4,15 @@
     "siteDescription": "最新のLSI技術動向、分析、TOPICS配信",
     "delimiter": "、",
     "cancel": "キャンセル",
-    "delete": "削除する",
-    "processing": "処理中"
+    "delete": "削除",
+    "edit": "編集",
+    "save": "保存",
+    "search": "検索",
+    "back": "戻る",
+    "details": "詳細",
+    "download": "ダウンロード",
+    "processing": "処理中",
+    "notSet": "未設定"
   },
   "nav": {
     "home": "ホーム",
@@ -14,6 +21,11 @@
     "analysis": "分析",
     "contact": "お問い合わせ",
     "admin": "管理者用"
+  },
+  "languageSwitcher": {
+    "language": "言語",
+    "ja": "日本語",
+    "en": "英語"
   },
   "footer": {
     "copyright": "© 2025 LSI戦略コミッティ. All rights reserved.",
@@ -32,38 +44,31 @@
   "research": {
     "title": "動向調査",
     "description": "最新の半導体技術動向を調査・分析しています",
-    "readMore": "レポート詳細へ",
     "publishDate": "公開日: {date}",
     "filter": "フィルター",
     "sort": "並び替え",
     "category": "カテゴリー",
     "search": "検索",
-    "backToList": "動向調査一覧へ戻る",
     "speakerLabel": "講演者",
     "departmentLabel": "部署",
     "materials": "資料",
     "agenda": "アジェンダ",
-    "downloadPdf": "講演資料をダウンロード"
+    "details": "詳細",
+    "back": "戻る",
+    "download": "ダウンロード"
   },
   "topics": {
     "title": "TOPICS配信",
     "description": "最新のLSI技術に関するトピックスを配信しています",
-    "readMore": "詳細を見る",
     "publishDate": "公開日: {date}",
     "filter": "フィルター",
     "sort": "並び替え",
     "category": "カテゴリー",
     "search": "検索",
-    "backToList": "TOPICS一覧へ戻る",
     "articleCount": "記事数: {count}件",
-    "readThisMonth": "今月号を読む",
     "categoryLabel": "カテゴリ:",
-    "articleUnit": "件"
-  },
-  "languageSwitcher": {
-    "language": "言語",
-    "ja": "日本語",
-    "en": "英語"
+    "articleUnit": "件",
+    "thisMonthArticles": "今月のTOPICS記事"
   },
   "contact": {
     "heading": "お問い合わせ・アクセス権申請",
@@ -105,6 +110,38 @@
     "topicsDesc": "RSS自動収集・手動追加・要約・ラベル付け・一覧管理・TOPICS一覧・TOPICS選択・テンプレート出力・カテゴリ選択・サマリ入力・プレビュー出力・メール配信"
   },
   "admin": {
+    "common": {
+      "backToAdmin": "管理者ページへ戻る"
+    },
+    "research": {
+      "management": "動向調査レポート 管理",
+      "total": "合計: {count}件のレポート",
+      "create": "新規レポート作成",
+      "edit": "編集",
+      "delete": "削除",
+      "confirmDelete": "本当に削除？",
+      "searchPlaceholder": "レポートタイトルで検索...",
+      "noResults": "レポートが見つかりません",
+      "error": "レポート一覧の取得に失敗しました",
+      "publishDate": "公開日: {date}",
+      "speaker": "講演者: {name}",
+      "saveError": "レポートの保存に失敗しました",
+      "notFound": "レポートが見つかりません",
+      "loadError": "レポート情報の取得に失敗しました",
+      "title": "タイトル",
+      "speakerLabel": "講演者",
+      "department": "講演者部署",
+      "agenda": "アジェンダ（各項目を改行で入力）",
+      "addAgendaItem": "項目を追加",
+      "removeAgendaItem": "削除",
+      "summary": "要約",
+      "video": "動画ファイル",
+      "thumbnail": "サムネイル画像",
+      "pdf": "資料PDF",
+      "cancel": "キャンセル",
+      "saving": "保存中...",
+      "save": "保存する"
+    },
     "topics": {
       "management": "TOPICS配信管理",
       "total": "合計: {count}件のTOPICS",

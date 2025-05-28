@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { TrendReport } from "@/types/trendReport";
+import FileUploader from "./FileUploader";
+import { useI18n } from "@/features/i18n/hooks/useI18n";
 
 interface ResearchReportFormProps {
   report?: TrendReport;
@@ -32,17 +34,32 @@ const ResearchReportForm: React.FC<ResearchReportFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { t } = useI18n();
 
   useEffect(() => {
+    console.log("受け取ったレポートデータ:", report);
     // 日付のフォーマット調整
-    if (report.publishDate) {
+    if (report && report.publishDate) {
       const date = new Date(report.publishDate);
       if (!isNaN(date.getTime())) {
-        setFormData({
+        const formattedReport = {
           ...report,
           publishDate: date.toISOString().split("T")[0],
+          // アジェンダが未定義またはnullの場合、空の配列を設定
+          agenda: report.agenda || [""],
+        };
+        console.log("フォームデータに設定:", formattedReport);
+        setFormData(formattedReport);
+      } else {
+        console.log("無効な日付形式:", report.publishDate);
+        setFormData({
+          ...report,
+          // アジェンダが未定義またはnullの場合、空の配列を設定
+          agenda: report.agenda || [""],
         });
       }
+    } else {
+      console.log("レポートデータまたは日付が存在しません");
     }
   }, [report]);
 
@@ -86,13 +103,19 @@ const ResearchReportForm: React.FC<ResearchReportFormProps> = ({
       const cleanAgenda =
         formData.agenda?.filter((item) => item.trim() !== "") || [];
 
+      console.log("フォーム送信データ:", {
+        ...formData,
+        agenda: cleanAgenda,
+      });
+
       await onSave({
         ...formData,
         agenda: cleanAgenda,
       });
     } catch (err) {
+      console.error("フォーム送信エラー:", err);
       setError(
-        err instanceof Error ? err.message : "保存中にエラーが発生しました"
+        err instanceof Error ? err.message : t("admin.research.saveError")
       );
     } finally {
       setIsSubmitting(false);
@@ -103,7 +126,7 @@ const ResearchReportForm: React.FC<ResearchReportFormProps> = ({
     <div className="bg-[#232b39] rounded-2xl shadow p-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-100">
-          {formData.id ? "レポート編集" : "新規レポート作成"}
+          {formData.id ? t("admin.research.edit") : t("admin.research.create")}
         </h1>
       </div>
 
@@ -115,7 +138,9 @@ const ResearchReportForm: React.FC<ResearchReportFormProps> = ({
 
       <form onSubmit={handleSubmit}>
         <div className="mb-5">
-          <label className="block text-gray-300 mb-1">タイトル</label>
+          <label className="block text-gray-300 mb-1">
+            {t("admin.research.title")}
+          </label>
           <input
             type="text"
             name="title"
@@ -127,7 +152,9 @@ const ResearchReportForm: React.FC<ResearchReportFormProps> = ({
         </div>
 
         <div className="mb-5">
-          <label className="block text-gray-300 mb-1">講演者</label>
+          <label className="block text-gray-300 mb-1">
+            {t("admin.research.speakerLabel")}
+          </label>
           <input
             type="text"
             name="speaker"
@@ -138,7 +165,9 @@ const ResearchReportForm: React.FC<ResearchReportFormProps> = ({
         </div>
 
         <div className="mb-5">
-          <label className="block text-gray-300 mb-1">講演者部署</label>
+          <label className="block text-gray-300 mb-1">
+            {t("admin.research.department")}
+          </label>
           <input
             type="text"
             name="department"
@@ -150,7 +179,7 @@ const ResearchReportForm: React.FC<ResearchReportFormProps> = ({
 
         <div className="mb-5">
           <label className="block text-gray-300 mb-1">
-            アジェンダ（各項目を改行で入力）
+            {t("admin.research.agenda")}
           </label>
           {formData.agenda?.map((item, index) => (
             <input
@@ -159,13 +188,15 @@ const ResearchReportForm: React.FC<ResearchReportFormProps> = ({
               value={item}
               onChange={(e) => handleAgendaChange(index, e.target.value)}
               className="w-full bg-[#2d3646] text-gray-200 rounded px-4 py-3 outline-none mb-2"
-              placeholder={`項目 ${index + 1}`}
+              placeholder={`${t("admin.research.agenda")} ${index + 1}`}
             />
           ))}
         </div>
 
         <div className="mb-5">
-          <label className="block text-gray-300 mb-1">概要</label>
+          <label className="block text-gray-300 mb-1">
+            {t("admin.research.summary")}
+          </label>
           <textarea
             name="summary"
             value={formData.summary}
@@ -177,42 +208,45 @@ const ResearchReportForm: React.FC<ResearchReportFormProps> = ({
         </div>
 
         <div className="mb-5">
-          <label className="block text-gray-300 mb-1">動画URL</label>
-          <input
-            type="text"
-            name="videoUrl"
-            value={formData.videoUrl || ""}
-            onChange={handleChange}
-            className="w-full bg-[#2d3646] text-gray-200 rounded px-4 py-3 outline-none"
+          <label className="block text-gray-300 mb-1">
+            {t("admin.research.video")}
+          </label>
+          <FileUploader
+            accept="video/*"
+            onUpload={(url) => setFormData({ ...formData, videoUrl: url })}
+            label={t("admin.research.video")}
+            currentValue={formData.videoUrl}
           />
         </div>
 
         <div className="mb-5">
           <label className="block text-gray-300 mb-1">
-            動画ポスター画像URL
+            {t("admin.research.thumbnail")}
           </label>
-          <input
-            type="text"
-            name="posterUrl"
-            value={formData.posterUrl || ""}
-            onChange={handleChange}
-            className="w-full bg-[#2d3646] text-gray-200 rounded px-4 py-3 outline-none"
+          <FileUploader
+            accept="image/*"
+            onUpload={(url) => setFormData({ ...formData, posterUrl: url })}
+            label={t("admin.research.thumbnail")}
+            currentValue={formData.posterUrl}
           />
         </div>
 
         <div className="mb-5">
-          <label className="block text-gray-300 mb-1">資料PDF URL</label>
-          <input
-            type="text"
-            name="pdfUrl"
-            value={formData.pdfUrl || ""}
-            onChange={handleChange}
-            className="w-full bg-[#2d3646] text-gray-200 rounded px-4 py-3 outline-none"
+          <label className="block text-gray-300 mb-1">
+            {t("admin.research.pdf")}
+          </label>
+          <FileUploader
+            accept="application/pdf"
+            onUpload={(url) => setFormData({ ...formData, pdfUrl: url })}
+            label={t("admin.research.pdf")}
+            currentValue={formData.pdfUrl}
           />
         </div>
 
         <div className="mb-5">
-          <label className="block text-gray-300 mb-1">公開日</label>
+          <label className="block text-gray-300 mb-1">
+            {t("research.publishDate").replace(" {date}", "")}
+          </label>
           <input
             type="date"
             name="publishDate"
@@ -230,14 +264,16 @@ const ResearchReportForm: React.FC<ResearchReportFormProps> = ({
             className="bg-gray-500 hover:bg-gray-400 text-white px-6 py-2 rounded transition"
             disabled={isSubmitting}
           >
-            キャンセル
+            {t("admin.research.cancel")}
           </button>
           <button
             type="submit"
             className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded transition"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "保存中..." : "保存する"}
+            {isSubmitting
+              ? t("admin.research.saving")
+              : t("admin.research.save")}
           </button>
         </div>
       </form>

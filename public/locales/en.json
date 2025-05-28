@@ -5,7 +5,14 @@
     "delimiter": ", ",
     "cancel": "Cancel",
     "delete": "Delete",
-    "processing": "Processing..."
+    "edit": "Edit",
+    "save": "Save",
+    "search": "Search",
+    "back": "Back",
+    "details": "Details",
+    "download": "Download",
+    "processing": "Processing...",
+    "notSet": "Not set"
   },
   "nav": {
     "home": "Home",
@@ -14,6 +21,11 @@
     "analysis": "Analysis",
     "contact": "Contact",
     "admin": "Admin"
+  },
+  "languageSwitcher": {
+    "language": "Language",
+    "ja": "Japanese",
+    "en": "English"
   },
   "footer": {
     "copyright": "© 2025 LSI Strategy Committee. All rights reserved.",
@@ -32,38 +44,28 @@
   "research": {
     "title": "Trend Research",
     "description": "We research and analyze the latest semiconductor technology trends",
-    "readMore": "View Report Details",
     "publishDate": "Publish Date: {date}",
     "filter": "Filter",
     "sort": "Sort",
     "category": "Category",
     "search": "Search",
-    "backToList": "Back to Trend Research List",
     "speakerLabel": "Speaker",
     "departmentLabel": "Department",
     "materials": "Materials",
-    "agenda": "Agenda",
-    "downloadPdf": "Download presentation material for {title}"
+    "agenda": "Agenda"
   },
   "topics": {
     "title": "TOPICS",
     "description": "We deliver the latest topics on LSI technology",
-    "readMore": "Read More",
     "publishDate": "Publish Date: {date}",
     "filter": "Filter",
     "sort": "Sort",
     "category": "Category",
     "search": "Search",
-    "backToList": "Back to TOPICS List",
     "articleCount": "Articles: {count}",
-    "readThisMonth": "Read This Issue",
     "categoryLabel": "Category:",
-    "articleUnit": " articles"
-  },
-  "languageSwitcher": {
-    "language": "Language",
-    "ja": "Japanese",
-    "en": "English"
+    "articleUnit": " articles",
+    "thisMonthArticles": "This Month's Articles"
   },
   "contact": {
     "heading": "Contact Us & Access Request",
@@ -105,6 +107,38 @@
     "topicsDesc": "RSS auto-collection, manual addition, summarization, labeling, list management, TOPICS list, selection, template export, category selection, summary input, preview, and email delivery"
   },
   "admin": {
+    "common": {
+      "backToAdmin": "Back to Admin"
+    },
+    "research": {
+      "management": "Research Report Management",
+      "total": "Total: {count} Reports",
+      "create": "Create New Report",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Confirm Delete?",
+      "searchPlaceholder": "Search by report title...",
+      "noResults": "No reports found",
+      "error": "Failed to fetch reports",
+      "publishDate": "Publish Date: {date}",
+      "speaker": "Speaker: {name}",
+      "saveError": "Failed to save report",
+      "notFound": "Report not found",
+      "loadError": "Failed to load report",
+      "title": "Title",
+      "speakerLabel": "Speaker",
+      "department": "Department",
+      "agenda": "Agenda (Enter each item)",
+      "addAgendaItem": "Add item",
+      "removeAgendaItem": "Remove",
+      "summary": "Summary",
+      "video": "Video file",
+      "thumbnail": "Thumbnail image",
+      "pdf": "PDF document",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "save": "Save"
+    },
     "topics": {
       "management": "TOPICS Management",
       "total": "Total: {count} TOPICS",
