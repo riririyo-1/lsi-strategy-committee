@@ -41,10 +41,10 @@ const TopicsPageClient = () => {
       <h1 className="text-4xl md:text-5xl font-bold mb-10 text-center text-white text-shadow">
         {t("topics.title") || "TOPICS配信"}
       </h1>
-      <p className="text-xl mb-8 text-center max-w-4xl">
+      <p className="text-xl mb-8 text-center mx-auto max-w-4xl text-white">
         {t("topics.description") || "半導体業界の月次トピックス配信"}
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
         {topics.map((topic) => (
           <TopicCard key={topic.id} topic={topic} />
         ))}

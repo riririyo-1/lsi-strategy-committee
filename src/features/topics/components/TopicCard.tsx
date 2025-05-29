@@ -22,26 +22,26 @@ export function TopicCard({ topic }: TopicCardProps) {
     : "";
 
   return (
-    <div className="report-card w-full p-4 flex flex-col gap-2 bg-sky-50/60 dark:bg-gray-800/80 border border-sky-100 dark:border-gray-700 rounded-lg shadow-lg hover:bg-sky-100/60 dark:hover:bg-gray-700/80 transition-all duration-300 text-gray-900 dark:text-gray-100">
-      <h2 className="text-2xl font-bold mb-3 text-green-700 dark:text-green-300 text-shadow-sm">
+    <div className="report-card w-full p-6 flex flex-col gap-3 bg-white/90 dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 text-gray-900 dark:text-gray-100">
+      <h2 className="text-2xl font-bold mb-3 text-blue-700 dark:text-blue-300">
         {topic.title}
       </h2>
-      <p className="text-gray-700 dark:text-gray-300 mb-4 flex-grow text-sm">
+      <p className="text-gray-700 dark:text-gray-300 mb-4 flex-grow">
         {topic.summary}
       </p>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
         {t("topics.categoryLabel", { defaultValue: "カテゴリ:" })}{" "}
         {categorySummary}
       </p>
-      <p className="text-xs text-gray-400 mb-1">
+      <p className="text-xs text-gray-500 mb-1">
         {t("topics.publishDate", { date: topic.publishDate })}
       </p>
-      <p className="text-xs text-gray-400 mb-4">
+      <p className="text-xs text-gray-500 mb-4">
         {t("topics.articleCount", { count: String(topic.articleCount) })}
       </p>
       <Link
         href={`/topics/${topic.id}`}
-        className="mt-auto self-start bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 text-sm"
+        className="mt-auto self-start bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300 text-sm"
       >
         {t("common.details")}
       </Link>

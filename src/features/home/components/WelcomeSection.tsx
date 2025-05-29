@@ -8,7 +8,7 @@ const WelcomeSection = () => {
   return (
     <section
       id="welcome-section"
-      className="page-section bg-white/80 dark:bg-black/60 p-8 md:p-12 rounded-xl shadow-2xl max-w-3xl w-full mb-12 text-center text-gray-900 dark:text-white"
+      className="page-section bg-white/80 dark:bg-black/60 p-8 md:p-12 rounded-xl shadow-2xl max-w-3xl mx-auto mb-12 text-center text-gray-900 dark:text-white"
     >
       <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white text-shadow">
         {t("home.welcome.title")}

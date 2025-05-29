@@ -6,7 +6,9 @@ import PageWithBackground from "@/components/common/PageWithBackground";
 export default function HomePage() {
   return (
     <PageWithBackground>
-      <WelcomeSection />
+      <div className="w-full flex justify-center">
+        <WelcomeSection />
+      </div>
     </PageWithBackground>
   );
 }
