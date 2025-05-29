@@ -38,15 +38,7 @@ const ResearchPageClient = () => {
   }, []);
 
   return (
-    <div
-      className="content-overlay relative z-1 flex flex-col items-center min-h-[calc(100vh-120px)] pt-[90px] pb-5 px-5 text-white"
-      style={{
-        backgroundImage: "url(/images/research.png)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
+    <>
       <h1 className="text-4xl md:text-5xl font-bold mb-10 text-center text-white text-shadow">
         {t("research.title")}
       </h1>
@@ -80,7 +72,7 @@ const ResearchPageClient = () => {
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 };
 

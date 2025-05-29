@@ -37,15 +37,7 @@ const TopicsPageClient = () => {
   const [topics] = useState<Topic[]>(dummyTopics);
 
   return (
-    <div
-      className="content-overlay relative z-1 flex flex-col items-center min-h-[calc(100vh-120px)] pt-[90px] pb-5 px-5 text-white"
-      style={{
-        backgroundImage: "url(/images/topics.png)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
+    <>
       <h1 className="text-4xl md:text-5xl font-bold mb-10 text-center text-white text-shadow">
         {t("topics.title") || "TOPICS配信"}
       </h1>
@@ -62,7 +54,7 @@ const TopicsPageClient = () => {
           <p>{t("topics.noData") || "トピックスが見つかりません"}</p>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

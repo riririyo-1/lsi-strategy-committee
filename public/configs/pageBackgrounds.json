@@ -12,6 +12,10 @@
     "type": "image",
     "src": "/images/topics.png"
   },
+  "analysis": {
+    "type": "image",
+    "src": "/images/analysis.png"
+  },
   "default": {
     "type": "color",
     "value": "#18181b"

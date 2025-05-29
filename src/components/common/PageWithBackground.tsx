@@ -17,9 +17,9 @@ const PageWithBackground = ({
   return (
     <PageBackground config={config}>
       <div
-        className={`content-overlay pt-[90px] pb-5 px-5 text-white ${className}`}
+        className={`content-overlay w-full flex flex-col items-center pt-[160px] pb-5 px-5 text-white ${className}`}
       >
-        {children}
+        <div className="w-full max-w-7xl">{children}</div>
       </div>
     </PageBackground>
   );
