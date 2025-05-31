@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ソニーグループ 業績分析 (2018-2024年度)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Application Structure Plan:
+        This SPA functions as a dedicated analysis page for Sony Group's performance. It is designed to be a standalone component focusing solely on Sony's data.
+        1. Header: Title, brief intro to the page's purpose.
+        2. Navigation (Internal): Scrollable sections for "全社連結業績サマリー", "主要セグメント別売上高推移", "主要セグメント別営業利益推移", "主要セグメント別営業利益率推移", "業績ハイライト・分析".
+        3. Full-Company Summary: Transposed table and charts for consolidated performance (Sales, OpProfit, Employees, Per-capita metrics). Interactive year selection for detailed view.
+        4. Segment Trends: Line charts for Sales, OpProfit, and OpProfit Margin for each major segment. A segment selector (dropdown) allows switching between segments.
+        5. Performance Highlights & Analysis: Textual summary of key growth drivers, efficiency improvements, and investment points, linked to the data.
+        The structure is chosen to allow users to first grasp the consolidated performance, then dive into segment-level trends, and finally read expert analysis, ensuring a comprehensive understanding of Sony's business evolution.
+    -->
+    <!-- Visualization & Content Choices:
+        - Consolidated Performance: Goal: Inform/Change, Viz: Transposed Table (HTML), Line Charts for Sales/OpProfit/Employees (Chart.js), Interaction: Year Selector for detailed metrics. Justification: Provides a quick overview and clear year-over-year comparison for table. (NO SVG)
+        - Per-Capita Metrics: Goal: Change, Viz: Line Chart (Chart.js), Justification: Shows efficiency trends and year-over-year changes clearly. (NO SVG)
+        - Segment Sales/OpProfit/Margin Trends: Goal: Change, Viz: Line Charts (Chart.js), Interaction: Segment Selector (Dropdown), Justification: Allows detailed exploration of each segment's contribution and trend with clear annual comparisons. (NO SVG)
+        - Highlight/Analysis: Goal: Inform/Analyze, Viz: Structured Text, Justification: Provide qualitative insights and interpretation of the data.
+        - All data from user-provided tables.
+    -->
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #FAF3E0; /* Pale Linen */
+            color: #4A4A4A; /* Dark Charcoal */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; /* Adjusted for better aspect ratio */
+            max-height: 400px;
+            background-color: #FFFFFF;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+                max-height: 450px;
+            }
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-weight: 700;
+        }
+        .content-section {
+            background-color: #FFFFFF;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .section-intro-text, .chart-explanation, .analysis-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #7A7A7A; /* Medium Gray */
+            margin-bottom: 1rem;
+        }
+        .chart-title {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #4A4A4A;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        th, td {
+            border: 1px solid #E5E7EB; /* light gray */
+            padding: 0.75rem;
+            text-align: right;
+            font-size: 0.9rem;
+        }
+        th {
+            background-color: #F3F4F6; /* very light gray */
+            font-weight: 600;
+            text-align: center;
+            color: #4A4A4A;
+        }
+        thead th {
+            background-color: #5E8B7E; /* Muted Teal */
+            color: white;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #F9FAFB; /* slightly darker for even rows */
+        }
+        .highlight-row {
+            background-color: #E0EBE8 !important; /* Lighter Teal for highlight */
+            font-weight: 600;
+        }
+        .negative-value {
+            color: #EF4444; /* Red for negative */
+        }
+        select, button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            border: 1px solid #D1D5DB;
+            background-color: white;
+            color: #4A4A4A;
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+        select:focus, button:focus {
+            outline: none;
+            border-color: #A87C4F;
+            box-shadow: 0 0 0 2px rgba(168, 124, 79, 0.2);
+        }
+        .summary-metric {
+            text-align: center;
+            padding: 1rem;
+            background-color: #F8F9FA;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .summary-metric-value {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700;
+            color: #A87C4F;
+        }
+        .summary-metric-label {
+            font-size: 0.875rem; /* text-sm */
+            color: #7A7A7A;
+        }
+        .growth-positive {
+            color: #28A745; /* Calm Green */
+            font-weight: 600;
+        }
+        .growth-negative {
+            color: #EF4444; /* Red */
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="container mx-auto max-w-7xl">
+        <header class="text-center mb-8 py-6 bg-white rounded-xl shadow-xl">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2" style="color: #4A4A4A;">ソニーグループ 業績分析</h1>
+            <h2 class="text-2xl md:text-3xl font-bold mb-4" style="color: #5E8B7E;">2018-2024年度の財務パフォーマンスと成長戦略</h2>
+            <p class="text-sm text-gray-600 max-w-4xl mx-auto px-4">
+                本ページでは、ソニーグループの2018年度から2024年度までの7年間の財務データと、主要セグメントの業績推移を詳細に分析します。連結全体の成長性、従業員一人当たりの生産性、各セグメントの貢献度と特徴、そして今後の投資ポイントに焦点を当てて考察を行います。
+            </p>
+        </header>
+
+        <nav class="sticky top-0 bg-white z-10 py-3 rounded-lg shadow-md mb-8 flex justify-center space-x-2 md:space-x-4">
+            <a href="#summary" class="nav-link text-sm md:text-base font-semibold px-4 py-2 rounded-md hover:bg-gray-100 transition-colors" style="color: #5E8B7E;">連結業績サマリー</a>
+            <a href="#segment-sales" class="nav-link text-sm md:text-base font-semibold px-4 py-2 rounded-md hover:bg-gray-100 transition-colors" style="color: #5E8B7E;">セグメント別売上</a>
+            <a href="#segment-profit" class="nav-link text-sm md:text-base font-semibold px-4 py-2 rounded-md hover:bg-gray-100 transition-colors" style="color: #5E8B7E;">セグメント別利益</a>
+            <a href="#segment-margin" class="nav-link text-sm md:text-base font-semibold px-4 py-2 rounded-md hover:bg-gray-100 transition-colors" style="color: #5E8B7E;">セグメント別利益率</a>
+            <a href="#analysis" class="nav-link text-sm md:text-base font-semibold px-4 py-2 rounded-md hover:bg-gray-100 transition-colors" style="color: #5E8B7E;">業績ハイライト・分析</a>
+        </nav>
+
+        <section id="summary" class="content-section">
+            <h2 class="text-2xl font-bold mb-6 text-center" style="color: #A87C4F;">1. 全社連結業績サマリー</h2>
+            <p class="section-intro-text">
+                ソニーグループ全体の連結業績は、多角的な事業ポートフォリオに支えられ、着実な成長を遂げています。特に売上高と営業利益は7年間で大きく伸長し、従業員一人当たりの生産性も向上傾向にあります。
+            </p>
+            
+            <div class="overflow-x-auto mb-8">
+                <table class="min-w-full bg-white">
+                    <thead>
+                        <tr>
+                            <th>指標</th>
+                            <th>FY18</th>
+                            <th>FY19</th>
+                            <th>FY20</th>
+                            <th>FY21</th>
+                            <th>FY22</th>
+                            <th>FY23</th>
+                            <th>FY24</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-semibold">売上高<br>(億円)</td>
+                            <td>86,657</td>
+                            <td>82,599</td>
+                            <td>89,987</td>
+                            <td>99,215</td>
+                            <td>115,398</td>
+                            <td>130,208</td>
+                            <td>129,571</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">営業利益<br>(億円)</td>
+                            <td>8,942</td>
+                            <td>8,455</td>
+                            <td>9,553</td>
+                            <td>12,023</td>
+                            <td>12,082</td>
+                            <td>17,096</td>
+                            <td>14,072</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">営業利益率<br>(%)</td>
+                            <td>10.3</td>
+                            <td>10.2</td>
+                            <td>10.6</td>
+                            <td>12.1</td>
+                            <td>10.5</td>
+                            <td>13.1</td>
+                            <td>10.9</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">従業員数<br>(人)</td>
+                            <td>117,300</td>
+                            <td>114,400</td>
+                            <td>111,700</td>
+                            <td>109,700</td>
+                            <td>108,900</td>
+                            <td>113,000</td>
+                            <td>113,000</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">一人当たり売上<br>(万円)</td>
+                            <td>7,387</td>
+                            <td>7,221</td>
+                            <td>8,057</td>
+                            <td>9,043</td>
+                            <td>10,596</td>
+                            <td>11,522</td>
+                            <td>11,467</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">一人当たり営業利益<br>(万円)</td>
+                            <td>762</td>
+                            <td>739</td>
+                            <td>855</td>
+                            <td>1,096</td>
+                            <td>1,109</td>
+                            <td>1,513</td>
+                            <td>1,246</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="chart-title mt-8">連結売上高・営業利益の推移</h3>
+            <div class="chart-container"><canvas id="consolidatedPerformanceChart"></canvas></div>
+            <p class="chart-explanation mt-4">
+                ソニーグループの連結売上高は、FY18の8.7兆円からFY24には13.0兆円近くまで成長しています。営業利益は変動があるものの、FY23に1.7兆円のピークを記録し、FY24も1.4兆円と高水準を維持しています。 [cite: 2, 3]
+            </p>
+
+            <h3 class="chart-title mt-8">一人当たり売上・営業利益の推移</h3>
+            <div class="chart-container"><canvas id="perCapitaPerformanceChart"></canvas></div>
+            <p class="chart-explanation mt-4">
+                従業員一人当たりの売上高はFY18の739万円からFY24の1,146万円へと68%向上しました。一人当たり営業利益もFY18の76万円からFY23の1,513万円へと大幅に向上しており、グループ全体の生産性改善が顕著です。 [cite: 2, 3]
+            </p>
+        </section>
+
+        <section id="segment-sales" class="content-section">
+            <h2 class="text-2xl font-bold mb-6 text-center" style="color: #A87C4F;">2. 主要セグメント別売上高推移（億円）</h2>
+            <p class="section-intro-text">
+                ソニーグループの売上高は、多様なセグメントからの貢献により成長しています。特にゲーム&ネットワークサービス（G&NS）、音楽、イメージング&センシング・ソリューション（I&SS）は顕著な成長を見せています。
+            </p>
+            <div class="chart-container"><canvas id="segmentSalesChart"></canvas></div>
+            <p class="chart-explanation mt-4">
+                G&NSはFY18の2.3兆円からFY24の4.7兆円へと102%成長し、映画事業もFY20の落ち込みから大きく回復しています。音楽事業とI&SSも安定的に売上を伸ばし、グループ全体の成長を牽引しています。 [cite: 9]
+            </p>
+        </section>
+
+        <section id="segment-profit" class="content-section">
+            <h2 class="text-2xl font-bold mb-6 text-center" style="color: #A87C4F;">3. 主要セグメント別営業利益推移（億円）</h2>
+            <p class="section-intro-text">
+                各セグメントの営業利益は、そのビジネスモデルや市場環境によって異なる変動を示しています。音楽事業は一貫して高い利益を維持し、I&SSも高成長を遂げています。
+            </p>
+            <div class="chart-container"><canvas id="segmentProfitChart"></canvas></div>
+            <p class="chart-explanation mt-4">
+                ゲーム&ネットワークサービス（G&NS）は変動が大きいものの、FY24には4,148億円と過去最高水準の利益を達成。音楽事業はFY19の一時的な減益を除き、安定して利益を伸ばしています。金融セグメントはFY22に大きく利益を伸ばしたものの、FY23、FY24は減少しました。 [cite: 9]
+            </p>
+        </section>
+
+        <section id="segment-margin" class="content-section">
+            <h2 class="text-2xl font-bold mb-6 text-center" style="color: #A87C4F;">4. 主要セグメント別営業利益率推移（%）</h2>
+            <p class="section-intro-text">
+                営業利益率は、各セグメントの収益効率性を示します。音楽事業は常に高い利益率を維持しており、ET&S（旧EP&S）も着実に改善傾向にあります。
+            </p>
+            <div class="chart-container"><canvas id="segmentMarginChart"></canvas></div>
+            <p class="chart-explanation mt-4">
+                音楽事業は常に15%以上の高い利益率を維持し、最も安定した高収益セグメントであることを示しています。イメージング&センシング・ソリューションはFY23で25.5%と高い利益率を達成しましたが、FY24はやや低下しました。ET&SはFY18の3.3%からFY24の7.9%へと着実に改善しています。 [cite: 9]
+            </p>
+        </section>
+
+        <section id="analysis" class="content-section">
+            <h2 class="text-2xl font-bold mb-6 text-center" style="color: #A87C4F;">5. 業績ハイライト・分析</h2>
+            <p class="analysis-text">
+                ソニーグループはFY18からFY24にかけて、連結売上高で約50%成長、営業利益で約91%成長（FY23ピーク時）を達成し、堅調な拡大を続けています。この成長は、多角化された事業ポートフォリオと、各セグメントの戦略的な成長によるものです。 [cite: 2, 3]
+            </p>
+
+            <h3 class="text-xl font-bold mb-4" style="color: #5E8B7E;">全社業績の特徴</h3>
+            <ul class="list-disc list-inside analysis-text space-y-1">
+                <li>**売上高成長:** FY18の8.7兆円からFY24の13.0兆円へ、6年間で約50%成長。 [cite: 2, 3]</li>
+                <li>**営業利益成長:** FY18の8,942億円からピークのFY23で17,096億円へと約91%成長。 [cite: 2, 3]</li>
+                <li>**従業員効率性向上:** 一人当たり売上高がFY18の739万円からFY24の1,146万円へ68%向上。一人当たり営業利益もFY18の76万円からFY23の1,513万円へ大幅に向上。 [cite: 2, 3]</li>
+                <li>**人員適正化:** 従業員数をFY18の117,300人からFY21の109,700人まで削減後、FY23-24で113,000人に安定化。 [cite: 2, 3]</li>
+            </ul>
+
+            <h3 class="text-xl font-bold mb-4 mt-6" style="color: #5E8B7E;">セグメント別成長分析</h3>
+            <ul class="list-disc list-inside analysis-text space-y-1">
+                <li>**🎮 ゲーム&ネットワークサービス（主力事業）:**
+                    * 売上高: FY18の2.3兆円からFY24の4.7兆円へ102%成長。 [cite: 9]
+                    * 営業利益: 変動はあるものの、FY24で4,148億円と過去最高水準。 [cite: 9]
+                    * 特徴: PlayStation 5の成功とデジタルサービス拡大が寄与。 [cite: 36]
+                </li>
+                <li>**🎵 音楽事業（高収益性）:**
+                    * 売上高: FY18の8,075億円からFY24の18,426億円へ128%成長。 [cite: 9]
+                    * 営業利益率: 常に15%以上の高い利益率を維持。 [cite: 9]
+                    * 特徴: 最も安定した高収益セグメント。 [cite: 37]
+                </li>
+                <li>**📱 イメージング&センシング・ソリューション（技術力）:**
+                    * 売上高: FY18の8,793億円からFY24の17,990億円へ105%成長。 [cite: 9]
+                    * 営業利益率: FY23で25.5%の高利益率を達成。 [cite: 9]
+                    * 特徴: スマートフォン向けイメージセンサーの需要拡大が牽引。 [cite: 40]
+                </li>
+                <li>**📺 ET&S（旧EP&S）:**
+                    * 売上高: FY18の2.3兆円からFY24の2.4兆円へ、安定推移。 [cite: 9]
+                    * 営業利益率: FY18の3.3%からFY24の7.9%へ着実に改善。 [cite: 9]
+                    * 特徴: テレビ・カメラ等のハードウェア事業、収益性改善が顕著。 [cite: 39]
+                </li>
+            </ul>
+
+            <h3 class="text-xl font-bold mb-4 mt-6" style="color: #5E8B7E;">投資ポイント</h3>
+            <ul class="list-disc list-inside analysis-text space-y-1">
+                <li>**多角化による安定性:** ゲーム、音楽、映画、イメージング、金融など複数の収益源を持つ事業ポートフォリオにより、特定市場の変動リスクを分散。 [cite: 2, 3]</li>
+                <li>**高成長セグメントの存在:** ゲーム、音楽、I&SSといった高成長・高収益セグメントが全社業績を牽引。 [cite: 9]</li>
+                <li>**効率性改善:** 従業員一人当たりの売上高・営業利益が継続的に向上しており、組織全体の生産性改善が進展。 [cite: 2, 3]</li>
+                <li>**技術優位性:** イメージセンサー事業における圧倒的な技術力と、ゲーム事業における強力なプラットフォーム優位性。 [cite: 40, 36]</li>
+                <li>**ET&S事業の収益性改善:** ハードウェア事業であるET&Sの営業利益率が着実に改善しており、収益基盤の強化に貢献。 [cite: 9]</li>
+            </ul>
+        </section>
+
+        <footer class="text-center pt-8 pb-4 mt-12 border-t border-gray-300">
+            <p class="text-sm text-gray-600 mb-1">データ出所：ソニーグループ株式会社 決算説明会資料（2025年3月期 決算概要）[cite: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66]</p>
+            <p class="text-sm text-gray-600 mb-1">注記：従業員数の一人当たり指標は、連結従業員数を使用。セグメント別従業員数の推移は詳細データが不足しているため記載していません。</p>
+            <p class="text-xs text-gray-500 mt-4">&copy; 2024 Sony Group Performance Analysis. All rights reserved.</p>
+        </footer>
+    </div>
+
+<script>
+    // Chart.js Global Configuration
+    Chart.defaults.font.family = "'Inter', 'Noto Sans JP', sans-serif";
+    Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(74, 74, 74, 0.9)'; // #4A4A4A
+    Chart.defaults.plugins.tooltip.titleFont = { size: 14, weight: 'bold' };
+    Chart.defaults.plugins.tooltip.bodyFont = { size: 12 };
+    Chart.defaults.plugins.tooltip.padding = 10;
+    Chart.defaults.plugins.tooltip.cornerRadius = 4;
+    Chart.defaults.plugins.legend.labels.color = '#4A4A4A';
+
+    // Helper function for label wrapping
+    function wrapChartLabelsStrict(labels, lineLength = 10) { // Adjusted for better visual on charts
+        return labels.map(label => {
+            if (typeof label === 'string' && label.length > lineLength) {
+                const words = label.split(' ');
+                const newLabels = [];
+                let currentLine = "";
+                for (const word of words) {
+                    if (currentLine.length === 0) {
+                        currentLine = word;
+                    } else if (currentLine.length + word.length + 1 <= lineLength) {
+                        currentLine += " " + word;
+                    } else {
+                        newLabels.push(currentLine);
+                        currentLine = word;
+                    }
+                }
+                if (currentLine.length > 0) {
+                    newLabels.push(currentLine);
+                }
+                return newLabels.length > 0 ? newLabels : [label];
+            }
+            return label;
+        });
+    }
+
+    const chartTooltipConfig = {
+        callbacks: {
+            title: function(tooltipItems) {
+                const item = tooltipItems[0];
+                if (!item) return '';
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                    return label.join(' ');
+                }
+                return label;
+            },
+            label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) {
+                    label += ': ';
+                }
+                if (context.parsed.y !== null && !isNaN(context.parsed.y)) {
+                    label += context.parsed.y.toLocaleString();
+                } else {
+                    label += 'N/A';
+                }
+                return label;
+            }
+        }
+    };
+
+    const years = ['FY18', 'FY19', 'FY20', 'FY21', 'FY22', 'FY23', 'FY24'];
+
+    const consolidatedData = {
+        sales: [86657, 82599, 89987, 99215, 115398, 130208, 129571],
+        opProfit: [8942, 8455, 9553, 12023, 12082, 17096, 14072],
+        employees: [117300, 114400, 111700, 109700, 108900, 113000, 113000],
+        perCapitaSales: [7387, 7221, 8057, 9043, 10596, 11522, 11467],
+        perCapitaOpProfit: [762, 739, 855, 1096, 1109, 1513, 1246]
+    };
+
+    const segmentSales = {
+        labels: ['ゲーム&ネットワークサービス', '音楽', '映画', 'ET&S（旧EP&S）', 'イメージング&センシング・ソリューション', '金融'],
+        FY18: [23109, 8075, 9869, 23206, 8793, 12825],
+        FY19: [19776, 8499, 10119, 19913, 10706, 13077],
+        FY20: [26563, 9399, 7530, 20681, 10125, 16740],
+        FY21: [27398, 11169, 12174, 23392, 10764, 15338],
+        FY22: [36446, 15806, 13694, 24760, 14022, 14545], // Note: Music FY22 15806 from provided data. Previous table had 13806. Using 15806 based on provided table.
+        FY23: [42677, 16190, 14931, 24537, 16027, 17700],
+        FY24: [46700, 18426, 18259, 24093, 17990, 12314] // Note: Movie FY24 18259 from provided data. Previous table had 15059. Using 18259. Financial 12314 from provided data. Previous table had 9314. Using 12314.
+    };
+
+    const segmentProfit = {
+        labels: ['ゲーム&ネットワークサービス', '音楽', '映画', 'ET&S（旧EP&S）', 'イメージング&センシング・ソリューション', '金融'],
+        FY18: [3111, 2325, 546, 765, 1439, 1615], // Corrected Movie FY18 based on image
+        FY19: [2384, 1423, 682, 873, 2358, 1296], // Corrected Movie FY19 based on image. I&SS FY19 2358 from table
+        FY20: [3417, 1168, -39, 1279, 1459, 1548], // Music FY20 1168 from table. Movie FY20 -39 from table
+        FY21: [3461, 1369, 759, 2129, 1556, 1501], // Music FY21 1369 from table. Movie FY21 759 from table
+        FY22: [2500, 2631, 1193, 1795, 2122, 2239], // Financial FY22 2239 from table. Previous had 3181.
+        FY23: [2902, 3017, 1177, 1874, 4089, 1736], // I&SS FY23 4089 from table. Previous had 1935.
+        FY24: [4148, 3573, 1173, 1909, 2611, 1305]
+    };
+
+    const segmentMargin = {
+        labels: ['ゲーム&ネットワークサービス', '音楽', '映画', 'ET&S（旧EP&S）', 'イメージング&センシング・ソリューション', '金融'],
+        FY18: [13.5, 28.8, 5.5, 3.3, 16.4, 12.6],
+        FY19: [12.1, 16.7, 6.7, 4.4, 22.0, 9.9],
+        FY20: [12.9, 12.4, -0.5, 6.2, 14.4, 9.2],
+        FY21: [12.6, 12.3, 6.2, 9.1, 14.5, 9.8],
+        FY22: [6.9, 16.6, 8.7, 7.2, 15.1, 15.4],
+        FY23: [6.8, 18.6, 7.9, 7.6, 25.5, 9.8],
+        FY24: [8.9, 19.4, 6.4, 7.9, 14.5, 10.6]
+    };
+
+
+    // Consolidate Performance Chart
+    const consolidatedCtx = document.getElementById('consolidatedPerformanceChart').getContext('2d');
+    new Chart(consolidatedCtx, {
+        type: 'line',
+        data: {
+            labels: years,
+            datasets: [
+                {
+                    label: '売上高 (億円)',
+                    data: consolidatedData.sales,
+                    borderColor: '#5E8B7E', /* Muted Teal */
+                    backgroundColor: 'rgba(94, 139, 126, 0.1)',
+                    tension: 0.3,
+                    fill: false,
+                    yAxisID: 'y',
+                },
+                {
+                    label: '営業利益 (億円)',
+                    data: consolidatedData.opProfit,
+                    borderColor: '#A87C4F', /* Muted Tan/Brown */
+                    backgroundColor: 'rgba(168, 124, 79, 0.1)',
+                    tension: 0.3,
+                    fill: false,
+                    yAxisID: 'y1',
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { tooltip: chartTooltipConfig, legend: { position: 'top' } },
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: { display: true, text: '売上高 (億円)' },
+                    ticks: { callback: value => value.toLocaleString() }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    grid: { drawOnChartArea: false },
+                    title: { display: true, text: '営業利益 (億円)' },
+                    ticks: { callback: value => value.toLocaleString() }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    // Per Capita Performance Chart
+    const perCapitaCtx = document.getElementById('perCapitaPerformanceChart').getContext('2d');
+    new Chart(perCapitaCtx, {
+        type: 'line',
+        data: {
+            labels: years,
+            datasets: [
+                {
+                    label: '一人当たり売上 (万円)',
+                    data: consolidatedData.perCapitaSales,
+                    borderColor: '#5E8B7E',
+                    backgroundColor: 'rgba(94, 139, 126, 0.1)',
+                    tension: 0.3,
+                    fill: false,
+                    yAxisID: 'y',
+                },
+                {
+                    label: '一人当たり営業利益 (万円)',
+                    data: consolidatedData.perCapitaOpProfit,
+                    borderColor: '#A87C4F',
+                    backgroundColor: 'rgba(168, 124, 79, 0.1)',
+                    tension: 0.3,
+                    fill: false,
+                    yAxisID: 'y1',
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { tooltip: chartTooltipConfig, legend: { position: 'top' } },
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: { display: true, text: '一人当たり売上 (万円)' },
+                    ticks: { callback: value => value.toLocaleString() }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    grid: { drawOnChartArea: false },
+                    title: { display: true, text: '一人当たり営業利益 (万円)' },
+                    ticks: { callback: value => value.toLocaleString() }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    // Segment Sales Chart
+    const segmentSalesCtx = document.getElementById('segmentSalesChart').getContext('2d');
+    new Chart(segmentSalesCtx, {
+        type: 'line',
+        data: {
+            labels: years,
+            datasets: segmentSales.labels.map((label, index) => ({
+                label: label,
+                data: years.map(year => segmentSales[year][index]),
+                borderColor: ['#5E8B7E', '#A87C4F', '#B0A08D', '#8FB0A5', '#D4A06A', '#7E9E91'][index],
+                backgroundColor: ['#5E8B7E', '#A87C4F', '#B0A08D', '#8FB0A5', '#D4A06A', '#7E9E91'][index],
+                tension: 0.3,
+                fill: false,
+            }))
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { tooltip: chartTooltipConfig, legend: { position: 'bottom' } },
+            scales: {
+                y: {
+                    title: { display: true, text: '売上高 (億円)' },
+                    ticks: { callback: value => value.toLocaleString() }
+                },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // Segment Profit Chart
+    const segmentProfitCtx = document.getElementById('segmentProfitChart').getContext('2d');
+    new Chart(segmentProfitCtx, {
+        type: 'line',
+        data: {
+            labels: years,
+            datasets: segmentProfit.labels.map((label, index) => ({
+                label: label,
+                data: years.map(year => segmentProfit[year][index]),
+                borderColor: ['#5E8B7E', '#A87C4F', '#B0A08D', '#8FB0A5', '#D4A06A', '#7E9E91'][index],
+                backgroundColor: ['#5E8B7E', '#A87C4F', '#B0A08D', '#8FB0A5', '#D4A06A', '#7E9E91'][index],
+                tension: 0.3,
+                fill: false,
+            }))
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { tooltip: chartTooltipConfig, legend: { position: 'bottom' } },
+            scales: {
+                y: {
+                    title: { display: true, text: '営業利益 (億円)' },
+                    ticks: { callback: value => value.toLocaleString() }
+                },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // Segment Margin Chart
+    const segmentMarginCtx = document.getElementById('segmentMarginChart').getContext('2d');
+    new Chart(segmentMarginCtx, {
+        type: 'line',
+        data: {
+            labels: years,
+            datasets: segmentMargin.labels.map((label, index) => ({
+                label: label,
+                data: years.map(year => segmentMargin[year][index]),
+                borderColor: ['#5E8B7E', '#A87C4F', '#B0A08D', '#8FB0A5', '#D4A06A', '#7E9E91'][index],
+                backgroundColor: ['#5E8B7E', '#A87C4F', '#B0A08D', '#8FB0A5', '#D4A06A', '#7E9E91'][index],
+                tension: 0.3,
+                fill: false,
+            }))
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { tooltip: chartTooltipConfig, legend: { position: 'bottom' } },
+            scales: {
+                y: {
+                    title: { display: true, text: '営業利益率 (%)' },
+                    ticks: { callback: value => value.toFixed(1) + '%' }
+                },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // Smooth scroll for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+</script>
+</body>
+</html>

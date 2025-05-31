@@ -28,6 +28,12 @@ const Footer = () => {
             </a>
           </Link>{" "}
           |
+          <Link href="/articles" legacyBehavior>
+            <a className="hover:text-blue-300 transition-colors">
+              {t("footer.articles")}
+            </a>
+          </Link>{" "}
+          |
           <Link href="/admin" legacyBehavior>
             <a className="nav-link hover:text-yellow-300 transition-colors">
               {t("footer.admin")}

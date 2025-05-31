@@ -20,7 +20,8 @@
     "topics": "TOPICS",
     "analysis": "Analysis",
     "contact": "Contact",
-    "admin": "Admin"
+    "admin": "Admin",
+    "articles": "Articles"
   },
   "languageSwitcher": {
     "language": "Language",
@@ -32,7 +33,8 @@
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "contact": "Contact",
-    "admin": "Admin"
+    "admin": "Admin",
+    "articles": "Articles"
   },
   "home": {
     "welcome": {
@@ -66,6 +68,56 @@
     "categoryLabel": "Category:",
     "articleUnit": " articles",
     "thisMonthArticles": "This Month's Articles"
+  },
+  "articles": {
+    "title": "Articles",
+    "description": "Latest articles in the semiconductor industry",
+    "publishDate": "Publish Date: {date}",
+    "filter": "Filter",
+    "sort": "Sort",
+    "source": "Source",
+    "search": "Search",
+    "tableView": "View: Table",
+    "cardView": "View: Card",
+    "viewArticle": "View Article",
+    "originalArticle": "View Original",
+    "tableColumns": {
+      "title": "Title",
+      "source": "Source",
+      "date": "Date",
+      "summary": "Summary",
+      "labels": "Labels",
+      "actions": "Actions"
+    },
+    "detail": {
+      "title": "Article Details",
+      "source": "Source",
+      "publishDate": "Publish Date",
+      "summary": "Summary",
+      "labels": "Labels",
+      "content": "Content",
+      "relatedArticles": "Related Articles",
+      "backToList": "Back to List"
+    },
+    "collect": {
+      "title": "Article Collection",
+      "rssCollection": "RSS Collection",
+      "manualAdd": "Manual Add",
+      "dateRange": "Date Range",
+      "from": "From",
+      "to": "To",
+      "sourceSelection": "Source Selection",
+      "collectButton": "Collect",
+      "addButton": "Add",
+      "summarizeButton": "Summarize & Label",
+      "enterTitle": "Enter Title",
+      "enterUrl": "Enter URL",
+      "enterDate": "Enter Publish Date",
+      "enterSource": "Enter Source",
+      "collectionResult": "Collection Result",
+      "autoCollection": "Auto collection coming soon"
+    },
+    "noResults": "No articles match your criteria"
   },
   "contact": {
     "heading": "Contact Us & Access Request",

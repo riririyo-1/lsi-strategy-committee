@@ -115,8 +115,8 @@ export default function MapGlobe() {
         companiesData = [
           {
             name: "TSMC",
-            lat: 24.8,
-            lon: 120.97,
+            lat: 24.0,
+            lon: 120.0,
             color: 0x8b5cf6,
             description:
               "台湾積体電路製造（TSMC）は、世界最大の半導体ファウンドリです。",
@@ -124,7 +124,7 @@ export default function MapGlobe() {
           },
           {
             name: "UMC",
-            lat: 24.82,
+            lat: 24.99,
             lon: 120.99,
             color: 0x10b981,
             description:
@@ -133,8 +133,8 @@ export default function MapGlobe() {
           },
           {
             name: "Samsung Electronics",
-            lat: 37.28,
-            lon: 127.01,
+            lat: 37.0,
+            lon: 126.8,
             color: 0x3b82f6,
             description:
               "サムスン電子は、メモリ半導体やシステムLSIなどを手がける韓国の総合電機メーカーです。",
@@ -142,7 +142,7 @@ export default function MapGlobe() {
           },
           {
             name: "GlobalFoundries",
-            lat: 42.97,
+            lat: 42.99,
             lon: -73.78,
             color: 0xef4444,
             description:
@@ -151,8 +151,8 @@ export default function MapGlobe() {
           },
           {
             name: "SK hynix",
-            lat: 37.27,
-            lon: 127.3,
+            lat: 37.5,
+            lon: 127.9,
             color: 0xf97316,
             description:
               "SKハイニックスは、韓国を拠点とする大手メモリ半導体メーカーです。",
@@ -169,7 +169,7 @@ export default function MapGlobe() {
           },
         ];
 
-        const markerGeometry = new THREE.SphereGeometry(0.015, 16, 16);
+        const markerGeometry = new THREE.SphereGeometry(0.01, 16, 16);
         const latLonToVector3 = (lat: number, lon: number, radius: number) => {
           const phi = (90 - lat) * (Math.PI / 180);
           const theta = (lon + 180) * (Math.PI / 180);
