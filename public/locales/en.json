@@ -150,13 +150,23 @@
       "minLength": "{field} must be at least {min} characters long"
     }
   },
+  "articlesCollect": {
+    "title": "Article Collection Management",
+    "description": "Collect and manually add articles from RSS feeds.",
+    "rssFeedTab": "RSS Feed Collection",
+    "manualAddTab": "Manual Addition",
+    "rssFeedTitle": "RSS Feed Collection",
+    "manualAddTitle": "Manual Article Addition"
+  },
   "adminDashboard": {
     "title": "Admin Dashboard",
     "swagger": "API Documentation (Swagger)",
     "researchTitle": "Research Report Management",
     "researchDesc": "Create, edit, delete, and publish research reports",
     "topicsTitle": "TOPICS Management",
-    "topicsDesc": "RSS auto-collection, manual addition, summarization, labeling, list management, TOPICS list, selection, template export, category selection, summary input, preview, and email delivery"
+    "topicsDesc": "RSS auto-collection, manual addition, summarization, labeling, list management, TOPICS list, selection, template export, category selection, summary input, preview, and email delivery",
+    "articlesTitle": "Article Collection",
+    "articlesDesc": "Collect and manually add articles from RSS feeds"
   },
   "admin": {
     "common": {

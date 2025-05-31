@@ -153,13 +153,23 @@
       "minLength": "{field}は{min}文字以上入力してください"
     }
   },
+  "articlesCollect": {
+    "title": "記事収集管理",
+    "description": "RSSフィードからの記事収集と手動追加を管理します。",
+    "rssFeedTab": "RSSフィード収集",
+    "manualAddTab": "手動追加",
+    "rssFeedTitle": "RSSフィード収集",
+    "manualAddTitle": "記事の手動追加"
+  },
   "adminDashboard": {
     "title": "管理者ダッシュボード",
     "swagger": "APIドキュメント（Swagger）",
     "researchTitle": "動向調査レポート管理",
     "researchDesc": "レポートの作成・編集・削除・公開設定",
     "topicsTitle": "TOPICS配信管理",
-    "topicsDesc": "RSS自動収集・手動追加・要約・ラベル付け・一覧管理・TOPICS一覧・TOPICS選択・テンプレート出力・カテゴリ選択・サマリ入力・プレビュー出力・メール配信"
+    "topicsDesc": "RSS自動収集・手動追加・要約・ラベル付け・一覧管理・TOPICS一覧・TOPICS選択・テンプレート出力・カテゴリ選択・サマリ入力・プレビュー出力・メール配信",
+    "articlesTitle": "記事収集",
+    "articlesDesc": "RSSフィードからの記事収集と手動追加を管理します"
   },
   "admin": {
     "common": {
